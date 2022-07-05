@@ -28,7 +28,7 @@ const MainContainer = () => {
                     tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'magnify' : 'magnify'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
                 }}/>
                 <Tabs.Screen name='Reels' component={HomeScreen} options={{
-                    tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'movie-play-outline' : 'movie-play'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
+                    tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'movie-open-play-outline' : 'movie-open-play'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
                 }}/>
                 <Tabs.Screen name='Shop' component={HomeScreen} options={{
                     tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'shopping-outline' : 'shopping'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
