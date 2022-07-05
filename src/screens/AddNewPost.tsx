@@ -27,42 +27,21 @@ const AddNewPost = () => {
     if(mediaLibraryPermissions.granted){
       getMedias();
     }
-    // const permissions = (Platform.OS === 'android' && PermissionsAndroid)
-    // if(permissions){
-    //   permissions.requestMultiple(
-    //     [
-    //       permissions.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    //       permissions.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //       permissions.PERMISSIONS.CAMERA
-    //   ]).then((result) => {
-    //       if(result['android.permission.CAMERA'] === 'granted' &&
-    //          result['android.permission.READ_EXTERNAL_STORAGE'] === 'granted' &&
-    //          result['android.permission.READ_EXTERNAL_STORAGE'] === 'granted')
-    //         {
-    //           setPermissionGranted(true);
-    //           CameraRoll.getPhotos({first:0,assetType:'All',mimeTypes:['.png','.jpg','.mp4','.jpeg']})
-    //           .then((data)=>{
-    //             data.edges.forEach(edge => console.log(edge.node.image.filename))
-    //           })
-    //           .catch(e => console.log("camera roll err :",e))      
-    //         }
-    //         else{
-    //           console.log("permission denied");
-    //         }
-    //   }).catch(err => console.log("permission error :",err))
-    // }
   }
 
   const getMedias = async () =>{
-    const album = await MediaLibrary.getAssetsAsync({
+    const pagedAssets = await MediaLibrary.getAssetsAsync({
       first : 20,
       mediaType : [MediaLibrary.MediaType.photo,MediaLibrary.MediaType.video]
     })
-    album.assets.forEach(asset => {
-      console.log("filename :",asset.filename);
-      console.log("mediaType :",asset.mediaType);
-      
-    })
+    console.log(pagedAssets.endCursor);
+    
+    // console.log("album hasnext :",album.hasNextPage);
+    
+    // album.assets.forEach(asset => {
+    //   console.log("mediaType :",asset.mediaType);
+    //   console.log("uri :",asset.uri);
+    // })
 
   }
   useEffect(() => {
