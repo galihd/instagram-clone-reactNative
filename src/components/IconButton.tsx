@@ -9,9 +9,9 @@ type btnProps = {
     pressFunction? : ()=>void
 }
 
-const IconButton : React.FC<btnProps>= ({btnSize,iconName,pressFunction}) => {
+const IconButton : React.FC<btnProps>= ({btnSize,iconName,pressFunction,children}) => {
   return (
-    <TouchableOpacity onPress={pressFunction}>
+    <TouchableOpacity onPress={pressFunction} style={{flexDirection:'row',alignItems:'center'}}>
       <Icon name={iconName}
         style={{
             fontSize : btnSize === 'large' ? 30 : btnSize === 'medium' ? 25 : 15,
@@ -21,6 +21,7 @@ const IconButton : React.FC<btnProps>= ({btnSize,iconName,pressFunction}) => {
             textAlignVertical : 'center'
         }}
       />
+      {children}
     </TouchableOpacity>
   )
 }
