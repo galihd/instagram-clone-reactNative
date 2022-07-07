@@ -19,7 +19,7 @@ const Header = () => {
         source={require("../../../assets/Instagram_header.png")}/>
       </TouchableOpacity>
       <View style={styles.iconContainer}> 
-        <IconButton iconName='plus-box-outline' btnSize='large' pressFunction={()=> navigation.navigate("addNewPost")}/>
+        <IconButton iconName='plus-box-outline' btnSize='large' pressFunction={()=> navigation.navigate("createPost")}/>
         <IconButton iconName='heart-outline' btnSize='medium' />
         <IconButtonBadged iconName='facebook-messenger' btnSize='medium' badgeNumber={10}/>
       </View>

@@ -5,26 +5,30 @@ import { homeStackParamList } from '../types/navtypes';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import CommentScreen from '../screens/CommentScreen';
-import Icon from 'react-native-vector-icons/MaterialIcons'
-import AddNewPost from '../screens/AddNewPost';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import IconButton from '../components/IconButton';
+import AddPostStack from './AddPostStack';
 
 const HomeStack = () => {
     const homeStack = createStackNavigator<homeStackParamList>();
 
-    var stackOptions : (r? : React.ReactNode,t?: string)=>StackNavigationOptions = (rightButton,title) => ({
+    var stackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.ReactNode)=>StackNavigationOptions = (leftButton?,title?,rightButton?) => ({
       headerStyle:{backgroundColor:'black'},
-      headerTitleStyle : {color:'white'},
       headerTintColor:'white',
-      headerRight : ()=>rightButton,
-      headerTitle : title && title
+      headerBackImage :  ()=>leftButton ? leftButton : <IconButton iconName='arrow-left' btnSize={'large'}/>,
+      headerTitle : title && title,
+      headerRight : ()=>rightButton ? rightButton : null,
     })
 
   return (
-    <homeStack.Navigator >
+    <homeStack.Navigator initialRouteName='home'>
         <homeStack.Screen name='home' component={HomeScreen} options={{headerShown:false}}/>
         <homeStack.Screen name='Profile' component={ProfileScreen}/>
-        <homeStack.Screen name='comments' component={CommentScreen} options={stackOptions(<Icon name='send' style={styles.headerBtn}></Icon>,"Comments")}/>
-        <homeStack.Screen name='addNewPost' component={AddNewPost} options={stackOptions(null,"New Post")}/>
+        <homeStack.Screen name='comments' component={CommentScreen} 
+          options={stackOptions(null,"Comments",<Icon name='send' style={styles.headerBtnRotate}/>)}/>
+        <homeStack.Screen name='createPost'  options={{headerShown:false}}>
+          {props=> <AddPostStack />}
+        </homeStack.Screen>
     </homeStack.Navigator>
   )
 }
@@ -36,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor : 'black',
     color: 'white'
   },
-  headerBtn : {
+  headerBtnRotate : {
     fontSize : 20,
     color:'white',
     marginRight:15,
