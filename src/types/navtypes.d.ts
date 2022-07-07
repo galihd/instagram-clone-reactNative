@@ -7,12 +7,19 @@ export type authStackParamList = {
 }
 
 export type homeStackParamList = {
-    addNewPost : undefined
     home : undefined
     Profile : {
         username : string
     }
     comments : {
         post : PostType
+    }
+    createPost : undefined
+}
+
+export type createPostStackParamList = {
+    addNewPost : undefined
+    postDetails : {
+        selectedFiles : Array<MediaLibrary.Asset> | MediaLibrary.Asset | CameraCapturedPicture
     }
 }
