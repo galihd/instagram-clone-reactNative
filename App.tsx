@@ -2,8 +2,6 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { NavigationContainer } from '@react-navigation/native';
 import { Image, StatusBar, StyleSheet, Text, View } from 'react-native';
 import HomeStack from './src/navigations/HomeStack';
-import MainContainer from './src/navigations/MainContainer';
-import HomeScreen from './src/screens/HomeScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ExploreScreen from './src/screens/ExploreScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -31,10 +29,10 @@ export default function App() {
                 <Tabs.Screen name='Search' component={ExploreScreen} options={{
                     tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'magnify' : 'magnify'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
                 }}/>
-                <Tabs.Screen name='Reels' component={HomeScreen} options={{
+                <Tabs.Screen name='Reels' component={ExploreScreen} options={{
                     tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'movie-open-play-outline' : 'movie-open-play'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
                 }}/>
-                <Tabs.Screen name='Shop' component={HomeScreen} options={{
+                <Tabs.Screen name='Shop' component={ExploreScreen} options={{
                     tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'shopping-outline' : 'shopping'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
                 }}/>
                 <Tabs.Screen name='Profile' component={ProfileScreen} options={{
