@@ -12,7 +12,7 @@ import IconButton from '../components/IconButton';
 
 const {width,height} = Dimensions.get('window');
 
-const AddNewPost : React.FC<{
+const AddNewPostScreen : React.FC<{
   selectFiles : React.Dispatch<React.SetStateAction<MediaLibrary.Asset | MediaLibrary.Asset[] | CameraCapturedPicture | undefined>>
 }> = 
 ({selectFiles}) => {
@@ -147,7 +147,7 @@ const PreviewTab : React.FC<{previewFile : MediaLibrary.Asset | undefined}> = ({
   )
 }
 
-export default AddNewPost
+export default AddNewPostScreen
 
 const styles = StyleSheet.create({
     MainContainer : {

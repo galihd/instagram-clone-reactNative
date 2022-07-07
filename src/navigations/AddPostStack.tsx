@@ -2,11 +2,11 @@ import { StyleSheet, Text, View} from 'react-native'
 import React, { useState } from 'react'
 import { createStackNavigator, StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack'
 import { createPostStackParamList } from '../types/navtypes'
-import AddNewPost from '../screens/AddNewPostScreen'
 import IconButton from '../components/IconButton'
 import { useNavigation } from '@react-navigation/native'
 import * as MediaLibrary from 'expo-media-library'
 import {CameraCapturedPicture} from 'expo-camera'
+import AddNewPostScreen from '../screens/AddNewPostScreen'
 
 const AddPostStack = () => {
     const CreatePostStack = createStackNavigator<createPostStackParamList>();
@@ -32,7 +32,7 @@ const AddPostStack = () => {
             pressFunction={()=>{navigation.navigate('postDetails',{selectedFiles : selectedFiles})}}
             />)
           }>
-            {props => <AddNewPost selectFiles={setselectedFiles}/>}
+            {props => <AddNewPostScreen selectFiles={setselectedFiles}/>}
       </CreatePostStack.Screen>
 
       
