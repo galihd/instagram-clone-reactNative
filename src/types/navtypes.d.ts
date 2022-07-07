@@ -1,4 +1,8 @@
 import { PostType } from "./modeltypes"
+import {CameraCapturedPicture} from 'expo-camera'
+import * as MediaLibrary from 'expo-media-library'
+
+
 
 export type authStackParamList = {
     Home : undefined
@@ -20,6 +24,6 @@ export type homeStackParamList = {
 export type createPostStackParamList = {
     addNewPost : undefined
     postDetails : {
-        selectedFiles : Array<MediaLibrary.Asset> | MediaLibrary.Asset | CameraCapturedPicture
+        selectedFiles : Array<MediaLibrary.Asset> | CameraCapturedPicture | undefined
     }
 }
