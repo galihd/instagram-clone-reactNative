@@ -132,9 +132,6 @@ const styles = StyleSheet.create({
     paddingVertical:5,
     justifyContent:'space-between'
   },
-  formGroup : {
-    color : 'white'
-  },
   imageThumbnail : {
     width:100,
     height:100,
