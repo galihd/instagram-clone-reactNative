@@ -11,10 +11,10 @@ const {width,height} = Dimensions.get('window');
 const GallerySelector : React.FC<{
     assets : Array<MediaLibrary.Asset>,
     selectedFilesState : MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined,
-    selectFileFunction : React.Dispatch<React.SetStateAction<MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined>>
+    setSelectFileFunction : React.Dispatch<React.SetStateAction<MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined>>
     closeFunction : ()=>void,
 
-  }> = ({assets,selectedFilesState,selectFileFunction,closeFunction}) => {
+  }> = ({assets,selectedFilesState,setSelectFileFunction,closeFunction}) => {
     const [previewFile, setPreviewFile] = useState<MediaLibrary.Asset>();
     const [allowMultiple, setAllowMultiple] = useState<boolean>(false);
 
@@ -22,11 +22,11 @@ const GallerySelector : React.FC<{
       setPreviewFile(file as MediaLibrary.Asset);
       if(allowMultiple && selectedFilesState){
         (selectedFilesState as Array<MediaLibrary.Asset>).includes(file) ?
-          selectFileFunction(prev => (prev as MediaLibrary.Asset[]).filter(selected => selected != file))
+          setSelectFileFunction(prev => (prev as MediaLibrary.Asset[]).filter(selected => selected != file))
         :
-          selectFileFunction(prev => [...prev as Array<MediaLibrary.Asset>,file])
+          setSelectFileFunction(prev => [...prev as Array<MediaLibrary.Asset>,file])
       }else{
-        selectFileFunction([file]);
+        setSelectFileFunction([file]);
       }
     }
   

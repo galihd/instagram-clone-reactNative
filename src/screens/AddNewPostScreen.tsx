@@ -47,7 +47,7 @@ const AddNewPostScreen : React.FC<{
           <GallerySelector 
             assets={assets} 
             selectedFilesState={selectedFilesState} 
-            selectFileFunction={selectFiles}
+            setSelectFileFunction={selectFiles}
             closeFunction={()=>setPostingMode("cameraActive")}
             />
       }
