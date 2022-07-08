@@ -1,6 +1,7 @@
 export type User = {
     username : string
-    image : string
+    email : string
+    avatarUrl : string
 }
 
 export type Comment = {

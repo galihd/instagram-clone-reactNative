@@ -5,8 +5,9 @@ import IconButton from '../components/IconButton'
 import { useNavigation } from '@react-navigation/native'
 import * as MediaLibrary from 'expo-media-library'
 import {Camera, CameraCapturedPicture} from 'expo-camera'
-import AddNewPostScreen from '../screens/AddNewPostScreen'
-import AddNewPostDetailsScreen from '../screens/AddNewPostDetailsScreen'
+
+import AddNewPostDetailsScreen from '../screens/Post/AddNewPostDetailsScreen'
+import AddNewPostScreen from '../screens/Post/AddNewPostScreen'
 
 
 var stackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.ReactNode)=>StackNavigationOptions = (leftButton?,title?,rightButton?) => ({

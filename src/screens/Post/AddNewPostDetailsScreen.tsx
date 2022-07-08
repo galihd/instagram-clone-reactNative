@@ -2,9 +2,8 @@ import { Image, StyleSheet, Switch, Text, TextInput, TouchableHighlight, View } 
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import { createPostStackParamList } from '../types/navtypes'
+import { createPostStackParamList } from '../../types/navtypes'
 import * as MediaLibrary from 'expo-media-library'
-import { CameraCapturedPicture } from 'expo-camera'
 import {Formik} from 'formik'
 import * as Yup from 'yup'
 

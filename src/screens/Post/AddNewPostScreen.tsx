@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import {Camera, CameraCapturedPicture} from 'expo-camera'
 import * as MediaLibrary from 'expo-media-library'
-import CameraCapturer from '../components/PostCreation/CameraCapturer'
-import GallerySelector from '../components/PostCreation/GallerySelector'
+import {CameraCapturer,GallerySelector} from '../../components/Post'
+
 
 const {width,height} = Dimensions.get('window')
 
@@ -25,8 +25,6 @@ const AddNewPostScreen : React.FC<{
       selectFiles([photo]);
       setCapturedPicture(photo);
       setPostingMode("previewCapture");
-      console.log(photo.uri);
-      
     }
   }
   
