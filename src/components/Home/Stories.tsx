@@ -9,7 +9,7 @@ const Stories = () => {
             {users.map((story,index) => 
                 <View style={styles.storyItem} key={index}>
                     <Image source={{uri : story.image}} style={styles.storyImg}/>
-                    <Text numberOfLines={1} style={{color : 'white'}}>{story.username}</Text>
+                    <Text numberOfLines={1} style={{color : 'white',fontSize:10}}>{story.username}</Text>
                 </View>
             )}
       </ScrollView>
