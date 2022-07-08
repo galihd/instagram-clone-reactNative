@@ -24,6 +24,6 @@ export type homeStackParamList = {
 export type createPostStackParamList = {
     addNewPost : undefined
     postDetails : {
-        selectedFiles : Array<MediaLibrary.Asset> | CameraCapturedPicture | undefined
+        selectedFiles : Array<MediaLibrary.Asset> | CameraCapturedPicture[] | undefined
     }
 }

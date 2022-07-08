@@ -23,12 +23,11 @@ const HomeStack = () => {
   return (
     <homeStack.Navigator initialRouteName='home'>
         <homeStack.Screen name='home' component={HomeScreen} options={{headerShown:false}}/>
+        <homeStack.Screen name='createPost' component={AddPostStack}  options={{headerShown:false}} />
         <homeStack.Screen name='Profile' component={ProfileScreen}/>
         <homeStack.Screen name='comments' component={CommentScreen} 
           options={stackOptions(null,"Comments",<Icon name='send' style={styles.headerBtnRotate}/>)}/>
-        <homeStack.Screen name='createPost'  options={{headerShown:false}}>
-          {props=> <AddPostStack />}
-        </homeStack.Screen>
+
     </homeStack.Navigator>
   )
 }

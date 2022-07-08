@@ -1,5 +1,4 @@
-import { StyleSheet} from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createStackNavigator, StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack'
 import { createPostStackParamList } from '../types/navtypes'
 import IconButton from '../components/IconButton'
@@ -23,7 +22,9 @@ const AddPostStack = () => {
     const CreatePostStack = createStackNavigator<createPostStackParamList>();
     const navigation = useNavigation<StackNavigationProp<createPostStackParamList,"addNewPost">>();
     const [assets, setAssets] = useState<Array<MediaLibrary.Asset>>([])
-    const [selectedFiles, setselectedFiles] = useState<Array<MediaLibrary.Asset> | CameraCapturedPicture>();
+    const [selectedFiles, setselectedFiles] = useState<Array<MediaLibrary.Asset> | Array<CameraCapturedPicture>>();
+
+    const handleSubmitRef = useRef<(e?: React.FormEvent<HTMLFormElement> | undefined) => void>();
 
     const requestFilePermission = async () => {
       const cameraPermissions = await Camera.requestCameraPermissionsAsync();
@@ -41,6 +42,12 @@ const AddPostStack = () => {
       })
       setAssets(pagedAssets.assets);
     }
+
+
+
+    const createPost = ()=>{
+      handleSubmitRef.current!()
+    }
   
     useEffect(() => {
       requestFilePermission()
@@ -49,6 +56,7 @@ const AddPostStack = () => {
         
       }
     }, [])
+
 
 
   return (
@@ -71,16 +79,15 @@ const AddPostStack = () => {
         options={
           stackOptions(null,"Post Details",
           <IconButton 
-            iconName='arrow-right' 
+            iconName='check' 
             btnSize={'large'}
+            pressFunction={()=>createPost()}
           />
           )}>
-        {props => <AddNewPostDetailsScreen />}
+        {props => <AddNewPostDetailsScreen handleSubmitRef={handleSubmitRef}/>}
       </CreatePostStack.Screen>
     </CreatePostStack.Navigator>
   )
 }
 
 export default AddPostStack
-
-const styles = StyleSheet.create({})

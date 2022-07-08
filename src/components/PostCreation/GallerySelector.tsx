@@ -10,8 +10,8 @@ const {width,height} = Dimensions.get('window');
 
 const GallerySelector : React.FC<{
     assets : Array<MediaLibrary.Asset>,
-    selectedFilesState : MediaLibrary.Asset | MediaLibrary.Asset[] | CameraCapturedPicture | undefined,
-    selectFileFunction : React.Dispatch<React.SetStateAction<MediaLibrary.Asset | MediaLibrary.Asset[] | CameraCapturedPicture | undefined>>
+    selectedFilesState : MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined,
+    selectFileFunction : React.Dispatch<React.SetStateAction<MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined>>
     closeFunction : ()=>void,
 
   }> = ({assets,selectedFilesState,selectFileFunction,closeFunction}) => {
