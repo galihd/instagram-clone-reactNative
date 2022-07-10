@@ -3,11 +3,11 @@ import {CameraCapturedPicture} from 'expo-camera'
 import * as MediaLibrary from 'expo-media-library'
 
 
-
-export type authStackParamList = {
-    Home : undefined
-    SignIn : undefined
-    Register : undefined
+export type rootStackParamList = {
+    loading : undefined
+    signIn : undefined
+    signUp : undefined
+    main : undefined
 }
 
 export type homeStackParamList = {
