@@ -5,11 +5,12 @@ import HomeStack from './HomeStack';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { useUserContext } from '../contexts/UserContexts';
 
 
 const MainNavigation = () => {
     const Tabs = createMaterialBottomTabNavigator(); 
-
+    const {state} = useUserContext();
   return (
     <Tabs.Navigator
             barStyle={{backgroundColor:'black'}}
@@ -31,7 +32,7 @@ const MainNavigation = () => {
         tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'shopping-outline' : 'shopping'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
     }}/>
     <Tabs.Screen name='Profile' component={ProfileScreen} options={{
-        tabBarIcon : ({color}) => <Image style={styles.imgDisplay} source={{uri : "https://source.unsplash.com/random/800x800/?img=69"}}/>,
+        tabBarIcon : ({color}) => state.user?.avatarUrl ? <Image style={styles.imgDisplay} source={{uri : state.user.avatarUrl}}/> : <Icon name='account' style={styles.barIcon}/>,
     }}/>
 </Tabs.Navigator>
   )
