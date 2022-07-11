@@ -22,13 +22,22 @@ const GallerySelector : React.FC<{
       setPreviewFile(file as MediaLibrary.Asset);
       if(allowMultiple && selectedFilesState){
         (selectedFilesState as Array<MediaLibrary.Asset>).includes(file) ?
-          setSelectFileFunction(prev => (prev as MediaLibrary.Asset[]).filter(selected => selected != file))
+          selectedFilesState.length>1 && setSelectFileFunction(prev => (prev as MediaLibrary.Asset[]).filter(selected => selected != file))
         :
           setSelectFileFunction(prev => [...prev as Array<MediaLibrary.Asset>,file])
       }else{
         setSelectFileFunction([file]);
       }
     }
+
+    
+    useEffect(() => {
+      if(assets){
+        setSelectFileFunction([assets[0]])
+        setPreviewFile(assets[0])
+      }
+    }, [assets])
+    
   
   return (
     <>
