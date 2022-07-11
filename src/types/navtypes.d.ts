@@ -4,7 +4,6 @@ import * as MediaLibrary from 'expo-media-library'
 
 
 export type rootStackParamList = {
-    loading : undefined
     signIn : undefined
     signUp : undefined
     main : undefined
@@ -13,7 +12,7 @@ export type rootStackParamList = {
 export type homeStackParamList = {
     home : undefined
     Profile : {
-        username : string
+        appUserId : string
     }
     comments : {
         post : PostType

@@ -1,17 +1,26 @@
-export type User = {
-    username : string
+
+export type AppUser = {
+    appUserId : string
     email : string
-    avatarUrl : string
+    username? : string
+    phoneNumber? : string
+    avatarUrl? : string
 }
 
 export type Comment = {
-    user : User
+    user : AppUser
     comment : string
+}
+
+export type Post = {
+    files : string | string[],
+    caption : string,
+    appUser : AppUser
 }
 
 export type PostType = {
     image : string
-    user : User
+    user : AppUser
     likes : number
     caption : string
     comments : Array<Comment>
