@@ -9,7 +9,8 @@ import { rootStackParamList } from '../../types/navtypes'
 import { signUp } from '../../contexts/UserContexts/UserContextAction'
 import { useUserContext } from '../../contexts/UserContexts'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
-import { auth } from '../../firebaseConfig'
+import { auth } from '../../FireBase/firebaseConfig'
+import { usersRepo } from '../../FireBase/fireStoreFunctions'
 
 interface signUpInteface {
   email : string
@@ -28,14 +29,14 @@ const validationSchema = yup.object({
 
 const RegisterScreen = () => {
   const navigation = useNavigation<StackNavigationProp<rootStackParamList,"signUp">>();
-  const {state,dispatch} = useUserContext();
+  const {dispatch} = useUserContext();
 
+  
   const register = (values : signUpInteface,helpers : FormikHelpers<signUpInteface>) => {
     createUserWithEmailAndPassword(auth,values.email,values.password)
-    .then((result) => { 
-      // useless dispatch
-      dispatch(signUp(result.user));
-      
+    .then(async (result) => { 
+      const createdUser = await usersRepo.createNewUser(result.user.email!);
+      dispatch(signUp(createdUser));
       navigation.navigate('signIn')
     })
     .catch(err => console.log(err))
@@ -52,12 +53,12 @@ const RegisterScreen = () => {
           <FormContainer>
             <FormInput 
               value={values.email}
-              onChangeHandle={()=>handleChange('email')}
+              onChangeHandle={handleChange('email')}
               placeholderText='Email'
             />
             <FormInput 
               value={values.password}
-              onChangeHandle={()=>handleChange('password')}
+              onChangeHandle={handleChange('password')}
               placeholderText='Password'
               isPassword={true}
             />

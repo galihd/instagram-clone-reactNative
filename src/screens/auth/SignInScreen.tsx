@@ -1,5 +1,5 @@
-import { Button, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import React, { useEffect } from 'react'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { rootStackParamList } from '../../types/navtypes'
 import { useNavigation } from '@react-navigation/native'
@@ -7,8 +7,11 @@ import {Formik, FormikHelpers} from 'formik'
 import * as Yup from 'yup'
 import { FormContainer, FormInput } from '../../components/Forms'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import firebaseAuth from 'firebase/auth';
-import { auth } from '../../firebaseConfig'
+import {signInWithEmailAndPassword} from 'firebase/auth';
+import { auth } from '../../FireBase/firebaseConfig'
+import { useUserContext } from '../../contexts/UserContexts'
+import { signIn } from '../../contexts/UserContexts/UserContextAction'
+import { usersRepo } from '../../FireBase/fireStoreFunctions'
 
 
 interface signInInterface {
@@ -22,21 +25,33 @@ const initialValues : signInInterface = {
 }
 
 const validationSchema = Yup.object({
-  username : Yup.string().strict(true).trim().required().min(5).max(40),
+  username : Yup.string().strict(true).trim().required().min(5),
   password : Yup.string().min(8).required()
 })
 
 const SignInScreen = () => {
+    const {state,dispatch} = useUserContext();
     const navigation = useNavigation<StackNavigationProp<rootStackParamList,"signIn">>();
-    const signIn = (values : signInInterface,helpers : FormikHelpers<signInInterface>) => {
-      console.log(values);
-      
+
+
+    const logIn = (values : signInInterface,helpers : FormikHelpers<signInInterface>) => {
+      signInWithEmailAndPassword(auth,values.username,values.password)
+      .then(async response => {
+        const signedUser = await usersRepo.findAppUserByEmail(response.user.email!);
+        dispatch(signIn(signedUser));
+      })
+      .catch(er => console.log(er))
     }
+    useEffect(() => {
+      if(state.isAuthenticated)navigation.navigate('main')
+    }, [state.isAuthenticated])
+    
+
   return (
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={signIn}
+        onSubmit={logIn}
       >
           {( {values,handleChange,handleSubmit} )=>{
           return(
