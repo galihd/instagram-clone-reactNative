@@ -18,6 +18,7 @@ const MainNavigation = () => {
             labeled = {false}
             activeColor='white'
             inactiveColor='black'
+            backBehavior='history'
             >
     <Tabs.Screen name='Home' component={HomeStack} options={{
         tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'home-outline' : 'home'} style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
@@ -31,8 +32,9 @@ const MainNavigation = () => {
     <Tabs.Screen name='Shop' component={ExploreScreen} options={{
         tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'shopping-outline' : 'shopping'}  style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
     }}/>
-    <Tabs.Screen name='Profile' component={ProfileScreen} options={{
-        tabBarIcon : ({color}) => state.user?.avatarUrl ? <Image style={styles.imgDisplay} source={{uri : state.user.avatarUrl}}/> : <Icon name='account' style={styles.barIcon}/>,
+    <Tabs.Screen name='Profile' component={ProfileScreen} initialParams={{appUserId : state.user!.appUserId}} options={{
+        tabBarIcon : ({color}) => 
+        <Image style={styles.imgDisplay} source={{uri : `data:image/png;base64,${state.user!.avatarUrl}`}}/>,
     }}/>
 </Tabs.Navigator>
   )
