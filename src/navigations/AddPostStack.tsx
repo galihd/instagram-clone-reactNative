@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createStackNavigator, StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack'
-import { createPostStackParamList, homeStackParamList } from '../types/navtypes'
+import { createPostStackParamList } from '../types/navtypes'
 import IconButton from '../components/IconButton'
 import { useNavigation } from '@react-navigation/native'
 import * as MediaLibrary from 'expo-media-library'
@@ -22,7 +22,6 @@ var stackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.
 const AddPostStack = () => {
     const CreatePostStack = createStackNavigator<createPostStackParamList>();
     const navigation = useNavigation<StackNavigationProp<createPostStackParamList,"addNewPost">>();
-    const homeNavigation = useNavigation<StackNavigationProp<homeStackParamList,"createPost">>();
     const [assets, setAssets] = useState<Array<MediaLibrary.Asset>>([])
     const [selectedFiles, setselectedFiles] = useState<Array<MediaLibrary.Asset> | Array<CameraCapturedPicture>>();
 

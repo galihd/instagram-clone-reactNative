@@ -1,11 +1,55 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet} from 'react-native'
 import React from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import HomeStack from './HomeStack';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useUserContext } from '../contexts/UserContexts';
+import { createStackNavigator, StackNavigationOptions, TransitionPresets } from '@react-navigation/stack';
+import { mainStackParamList } from '../types/navtypes';
+import IconButton from '../components/IconButton';
+import HomeScreen from '../screens/HomeScreen';
+import CommentScreen from '../screens/Post/CommentScreen';
+import LikesScreen from '../screens/Post/LikesScreen';
+import AddPostStack from './AddPostStack';
+
+
+const mainStack = createStackNavigator<mainStackParamList>();
+
+var commonStackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.ReactNode)=>StackNavigationOptions = (leftButton?,title?,rightButton?) => ({
+    headerStyle:{backgroundColor:'black'},
+    headerTintColor:'white',
+    headerBackImage :  ()=>leftButton ? leftButton : <IconButton iconName='arrow-left' btnSize={'large'}/>,
+    headerTitle : title && title,
+    headerRight : ()=>rightButton ? rightButton : null,
+  })
+
+var createPostStackOptions : StackNavigationOptions = 
+    {
+      headerShown:false,
+      ...TransitionPresets.SlideFromRightIOS,
+      gestureDirection:'horizontal-inverted'
+    }
+
+const HomeStack = () => {
+  return (
+    <mainStack.Navigator initialRouteName='home'>
+        <mainStack.Screen name='home' component={HomeScreen} options={{headerShown:false}}/>
+        <mainStack.Screen name='createPost' component={AddPostStack}  options={createPostStackOptions}/>
+        <mainStack.Screen name='Profile' component={ProfileStack}/>
+        <mainStack.Screen name='comments' component={CommentScreen} options={commonStackOptions(null,"Comments",<Icon name='send' style={styles.headerBtnRotate}/>)}/>
+        <mainStack.Screen name='likes' component={LikesScreen} options={commonStackOptions(null,'Likes',null)}/>
+    </mainStack.Navigator>
+  )
+}
+
+const ProfileStack = () => {
+    return(
+    <mainStack.Navigator>
+        <mainStack.Screen name='Profile' component={ProfileScreen}/>
+    </mainStack.Navigator>
+    )
+}
 
 
 const MainNavigation = () => {
@@ -64,5 +108,15 @@ const styles = StyleSheet.create({
           fontSize : 28,
           fontWeight : '300',
           color : 'white'
+      },
+      commentHeader : {
+        backgroundColor : 'black',
+        color: 'white'
+      },
+      headerBtnRotate : {
+        fontSize : 20,
+        color:'white',
+        marginRight:15,
+        transform : [{rotate :'-50deg'}]
       }
 })

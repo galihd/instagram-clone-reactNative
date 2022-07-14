@@ -4,7 +4,7 @@ export type AppUser = {
     email : string
     username? : string
     phoneNumber? : string
-    avatarUrl? : string
+    avatarUrl : string
 }
 
 

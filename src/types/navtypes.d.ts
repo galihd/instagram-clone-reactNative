@@ -9,7 +9,7 @@ export type rootStackParamList = {
     main : undefined
 }
 
-export type homeStackParamList = {
+export type mainStackParamList = {
     home : undefined
     Profile : {
         appUserId : string

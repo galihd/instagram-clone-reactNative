@@ -9,6 +9,7 @@ const ProfileScreen: React.FC<props> = () => {
   const navigation = useNavigation<StackNavigationProp<homeStackParamList,"Profile">>()
   const routeProps = useRoute<RouteProp<homeStackParamList,"Profile">>()
   
+  console.log(routeProps.params.appUserId);
   
   
   return (
