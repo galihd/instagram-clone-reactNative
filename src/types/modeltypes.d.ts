@@ -13,9 +13,11 @@ export type Post = {
     appUser : AppUser
     fileUrls : string[]
     caption? : string
-    taggedPeople? : AppUser[]
+    taggedPeople? : AppUser[] | string[]
     location? : string
     likesCount : number
+    commentCount : number
+    createdAt : Date
 }
 
 export type Comment = {

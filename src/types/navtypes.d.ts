@@ -1,4 +1,4 @@
-import { PostType } from "./modeltypes"
+import { Post, PostType } from "./modeltypes"
 import {CameraCapturedPicture} from 'expo-camera'
 import * as MediaLibrary from 'expo-media-library'
 
@@ -15,7 +15,10 @@ export type homeStackParamList = {
         appUserId : string
     }
     comments : {
-        post : PostType
+        post : Post
+    }
+    likes : {
+        postId : string
     }
     createPost : undefined
 }
