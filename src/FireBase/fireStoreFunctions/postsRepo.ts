@@ -1,7 +1,8 @@
 import { collection, doc, FirestoreDataConverter, getDoc, getDocs, query, Query, setDoc, where } from "firebase/firestore";
 import { Post } from "../../types/modeltypes";
 import { db } from "../firebaseConfig";
-import { uploadPost } from "../fireStorage";
+import { downloadImage, downloadImages, uploadPost } from "../fireStorage";
+import { convertAppUserToDownloadable } from "./usersRepo";
 
 const PostConverter : FirestoreDataConverter<Post> = {
     fromFirestore : (snapshot,options) => ({...snapshot.data(options),postId : snapshot.id}) as Post,
@@ -9,6 +10,14 @@ const PostConverter : FirestoreDataConverter<Post> = {
 }
 
 const postsCollections = collection(db,"Posts").withConverter(PostConverter)
+
+const convertPostToDownloadble = async (postData : Post) : Promise<Post> => 
+({
+    ...postData,
+    fileUrls : await downloadImages(postData.fileUrls),
+    appUser : await convertAppUserToDownloadable(postData.appUser)
+})
+
 
 
 export const createPost = async (postData : Post) : Promise<Post> => {
@@ -24,15 +33,18 @@ export const createPost = async (postData : Post) : Promise<Post> => {
 }
 
 export const findPostById = async (postId : string) : Promise<Post> => {
-    return (await getDoc(doc(postsCollections,postId))).data()!;
+    return  getDoc(doc(postsCollections,postId)).
+            then(post => convertPostToDownloadble(post.data()!));
 }
 
 export const findPostsByUserId = async (appUserId:string) : Promise<Post[]>=> {
     const qSnap = await getDocs(query(postsCollections,where('appUser.appUserId','==',appUserId)));
-    return qSnap.docs.map(post => post.data());
+    const result : Post[] = qSnap.docs.map(post => post.data());
+    return Promise.all(result.map(convertPostToDownloadble));
 }
 
 export const findAllPostByUserGroup = async (appUserIds : string[]) : Promise<Post[]> => {
     const qSnap = await getDocs( query(postsCollections,where('appUser.appUserId','in',appUserIds)) );
-    return qSnap.docs.map(post => post.data());
+    const result : Post[] = qSnap.docs.map(post => post.data());
+    return Promise.all(result.map(convertPostToDownloadble));
 }

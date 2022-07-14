@@ -3,7 +3,7 @@ import React, { SetStateAction, useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { Post, AppUser,Comment } from '../../types/modeltypes'
 import { useNavigation } from '@react-navigation/native'
-import { homeStackParamList } from '../../types/navtypes'
+import { mainStackParamList } from '../../types/navtypes'
 import { StackNavigationProp } from '@react-navigation/stack'
 import IconButton from '../IconButton'
 import { useUserContext } from '../../contexts/UserContexts'
@@ -18,23 +18,8 @@ const Feeds = () => {
 
     useEffect(() => {
         feedItems.length === 0 &&
-        findAllPostByUserGroup([state.user?.appUserId!]).then(posts => {
-            const downloadedPost = posts.map(async post => {
-                const downloadUrl = await downloadImages(post.fileUrls);
-                const avatarDownloadUrl = await downloadImage(post.appUser.avatarUrl!)
-                return {
-                    ...post,
-                    fileUrls : downloadUrl,
-                    appUser: {
-                        ...post.appUser,
-                        avatarUrl : avatarDownloadUrl
-                    }
-                }
-            })
-
-            Promise.all(downloadedPost).then(downloaded => setfeedItems(downloaded))
-            
-        });
+        findAllPostByUserGroup([state.user?.appUserId!]).then(posts => setfeedItems(posts))
+           
       return () => {
         
       }
@@ -147,7 +132,7 @@ const PostDetails : React.FC<{postData : Post}> = (
     {postData }) =>{
     const [liked, setliked] = useState<boolean>(false);
     const [pagerIndexState, setPagerIndexState] = useState<number>(0);
-    const navigation = useNavigation<StackNavigationProp<homeStackParamList,"home">>();
+    const navigation = useNavigation<StackNavigationProp<mainStackParamList,"home">>();
     
 
     return(

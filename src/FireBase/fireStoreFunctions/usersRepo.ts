@@ -2,6 +2,7 @@
 import { getDoc,doc, setDoc, query, where, getDocs, updateDoc, FirestoreDataConverter, collection} from 'firebase/firestore'
 import { AppUser} from "../../types/modeltypes";
 import { db } from '../firebaseConfig';
+import { downloadImage } from '../fireStorage';
 
 const AppUserConverter : FirestoreDataConverter<AppUser> = {
     fromFirestore : (snapshot,options) => ({...snapshot.data(options),appUserId : snapshot.id}) as AppUser,
@@ -9,6 +10,13 @@ const AppUserConverter : FirestoreDataConverter<AppUser> = {
 } 
 
 const appUserCollections = collection(db,"AppUsers").withConverter(AppUserConverter)
+
+export const convertAppUserToDownloadable = async (appUserData : AppUser) : Promise<AppUser> =>({
+    ...appUserData,
+    avatarUrl : await downloadImage(appUserData.avatarUrl)
+})
+
+
 
 export const createNewUser = async (email : string) : Promise<AppUser> => {
     const docRef = doc(appUserCollections);
@@ -21,19 +29,27 @@ export const createNewUser = async (email : string) : Promise<AppUser> => {
     return findAppUserById(docRef.id);
 }
 export const findAppUserById = async (appUserId : string ) : Promise<AppUser> => {
-    return (await getDoc(doc(appUserCollections,appUserId))).data()!;
+    const result = (await getDoc(doc(appUserCollections,appUserId))).data()!;
+    return convertAppUserToDownloadable(result);
 }
 export const findAppUserByEmail = async (email : string ) : Promise<AppUser> => {
     const qSnap = await getDocs(query(appUserCollections,where("email","==",email)));
-    return qSnap.docs[0].data();
+    const result : AppUser = qSnap.docs[0].data();
+    return convertAppUserToDownloadable(result)
 }
 export const findAppUserByField = async (field : string,value : string) : Promise<AppUser> => {
     const qSnap = await getDocs(query(appUserCollections,where(`${field}`,"==",value)));
-    return qSnap.docs[0].data();
+    const result : AppUser = qSnap.docs[0].data();
+    return convertAppUserToDownloadable(result)
 }
 export const findAllAppUsersByField = async (field : string,value : string) : Promise<AppUser[]> => {
     const qSnap = await getDocs(query(appUserCollections,where(`${field}`,"==",value)));
-    return qSnap.docs.map(item => item.data());
+    const result = 
+        qSnap.docs
+        .map(item => item.data())
+        .map(convertAppUserToDownloadable)
+
+    return Promise.all(result)
 }
 export const saveUser = async (appUser : AppUser) : Promise<AppUser> => {
     await updateDoc(doc(appUserCollections,appUser.appUserId),{...appUser})
