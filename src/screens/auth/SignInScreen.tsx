@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { rootStackParamList } from '../../types/navtypes'
-import { useNavigation } from '@react-navigation/native'
+import { StackActions, useNavigation } from '@react-navigation/native'
 import {Formik, FormikHelpers} from 'formik'
 import * as Yup from 'yup'
 import { FormContainer, FormInput } from '../../components/Forms'
@@ -12,6 +12,7 @@ import { auth } from '../../FireBase/firebaseConfig'
 import { useUserContext } from '../../contexts/UserContexts'
 import { signIn } from '../../contexts/UserContexts/UserContextAction'
 import { usersRepo } from '../../FireBase/fireStoreFunctions'
+import { downloadImage, downloadImageAsBase64 } from '../../FireBase/fireStorage'
 
 
 interface signInInterface {
@@ -38,12 +39,13 @@ const SignInScreen = () => {
       signInWithEmailAndPassword(auth,values.username,values.password)
       .then(async response => {
         const signedUser = await usersRepo.findAppUserByEmail(response.user.email!);
-        dispatch(signIn(signedUser));
+        const userAvatar = await downloadImageAsBase64(signedUser.avatarUrl!);
+        dispatch( signIn({...signedUser,avatarUrl : userAvatar}) );
       })
       .catch(er => console.log(er))
     }
     useEffect(() => {
-      if(state.isAuthenticated)navigation.navigate('main')
+      if(state.isAuthenticated)navigation.dispatch(StackActions.replace('main'))
     }, [state.isAuthenticated])
     
 

@@ -4,16 +4,22 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { createPostStackParamList } from '../../types/navtypes'
 import * as MediaLibrary from 'expo-media-library'
-import {Formik} from 'formik'
+import {Formik, FormikHelpers} from 'formik'
 import * as Yup from 'yup'
+import { useUserContext } from '../../contexts/UserContexts'
+import { AppUser, Post } from '../../types/modeltypes'
+import { createPost } from '../../FireBase/fireStoreFunctions/postsRepo'
 
 
-const initialValues  = {
-  image : '',
+interface createPostInterface {
+  caption : string,
+  taggedPeople : Array<string>
+}
+const initialValues : createPostInterface = {
   caption : '',
-  postDate : '',
   taggedPeople : []
 }
+
 const schema = Yup.object({
   caption : Yup.string().max(50)
 })
@@ -24,20 +30,33 @@ const AddNewPostDetailsScreen : React.FC<{
   const [faceBookPost, setfaceBookPost] = useState<boolean>(false)
   const [twitterPost, settwitterPost] = useState<boolean>(false)
   const [tumblrPost, settumblrPost] = useState<boolean>(false)
+
+
+  const {state} = useUserContext();
   const routeProp = useRoute<RouteProp<createPostStackParamList,"postDetails">>();
   const {selectedFiles} = routeProp.params
   const {uri,...rest} =  (selectedFiles as Array<MediaLibrary.Asset>)[0]; 
+
+  const uploadPost = (values : createPostInterface, helpers : FormikHelpers<createPostInterface>) => {
+    const postData : Post = {
+      appUser : state.user!,
+      createdAt : new Date(),
+      likesCount : 0,
+      commentCount : 0,
+      fileUrls : selectedFiles!.map(selected => selected.uri),
+      caption : values.caption,
+      taggedPeople : values.taggedPeople,
+      postId : ''
+    }
+    createPost(postData)
+    helpers.setSubmitting(false);
+  }
 
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={(values,formikHelpers)=>{
-        (selectedFiles as MediaLibrary.Asset[])
-          .map((file,idx) => console.log("selected files -",`${idx} - ${file.filename}`))
-        console.log("caption",values.caption);
-        formikHelpers.setSubmitting(false);
-      }}
+      onSubmit={uploadPost}
     >
       {( {values,touched,errors,handleSubmit,handleChange} ) => {
         handleSubmitRef.current = handleSubmit
