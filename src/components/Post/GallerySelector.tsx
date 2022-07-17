@@ -4,6 +4,7 @@ import * as MediaLibrary from 'expo-media-library'
 import IconButton from '../IconButton';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { CameraCapturedPicture } from 'expo-camera';
+import { globalStyles, gridStyle } from '../../../AppStyle';
 
 
 const {width,height} = Dimensions.get('window');
@@ -52,16 +53,20 @@ const GallerySelector : React.FC<{
         </View>
 
         {assets && 
-          <ScrollView style={styles.GridContainer} contentContainerStyle={styles.GridContentContainert}>
+          <ScrollView style={globalStyles.darkContainer} contentContainerStyle={gridStyle.gridContentContainer}>
             {assets.map((file,idx) => 
               <TouchableHighlight key={idx} onPress={()=>touchFileHandler(file)} 
-                style={selectedFilesState && ((selectedFilesState as Array<MediaLibrary.Asset>).includes(file) && styles.selectedImage)}>
+                style={(selectedFilesState && (selectedFilesState as Array<MediaLibrary.Asset>).includes(file)) && gridStyle.selectedGridTouchable}>
                 {
                   file.mediaType === 'photo' ?
-                  <Image source={{uri : file.uri}} style={styles.GridImage}/> :
+                  <Image source={{uri : file.uri}} style={
+                    selectedFilesState && 
+                    ((selectedFilesState as Array<MediaLibrary.Asset>).includes(file)) ? 
+                      gridStyle.selectedGridImage : gridStyle.standardGridImage}/> 
+                    :
                   <View>
-                    <Image source={{uri : file.uri}} style={styles.GridImage}/> 
-                    <Icon name='play-outline' style={styles.GridVideoBadge}/>
+                    <Image source={{uri : file.uri}} style={gridStyle.standardGridImage}/> 
+                    <Icon name='play-outline' style={gridStyle.GridVideoBadge}/>
                   </View>
                 }
               </TouchableHighlight>
@@ -91,26 +96,6 @@ const PreviewPane : React.FC<{previewFile : MediaLibrary.Asset | undefined}> = (
 export default GallerySelector
 
 const styles = StyleSheet.create({
-  GridContainer:{
-
-  },
-  GridContentContainert : {
-    flexDirection:'row',
-    flexWrap:'wrap',
-    backgroundColor : 'black'
-  },
-  GridImage : {
-    width : width/3,
-    height: width/3,
-    resizeMode:'contain'
-  },
-  GridVideoBadge:{
-    position:'absolute',
-    top:3,
-    right:3,
-    fontSize:40,
-    fontWeight:'600',
-  },
   PreviewContainer : {
     height : height/2,
     width : width
@@ -123,8 +108,5 @@ const styles = StyleSheet.create({
     width:'100%',
     paddingHorizontal:20,
     paddingVertical:5
-  },
-  selectedImage : {
-    backgroundColor : 'white'
   }
 })

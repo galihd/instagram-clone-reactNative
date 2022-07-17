@@ -1,6 +1,6 @@
-import { Image, StatusBar, StyleSheet, Text, View } from 'react-native'
+import { Image, StatusBar,View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { createStackNavigator} from '@react-navigation/stack'
+import { createStackNavigator, StackNavigationOptions, TransitionPresets} from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 import { rootStackParamList } from '../types/navtypes'
 import MainNavigation from './MainNavigation'
@@ -9,6 +9,15 @@ import RegisterScreen from '../screens/auth/RegisterScreen'
 import * as SplashScreen from 'expo-splash-screen';
 import { useUserContext } from '../contexts/UserContexts'
 import { loadUserDataFromStorage, signIn } from '../contexts/UserContexts/UserContextAction'
+import AddPostStack from './AddPostStack'
+import {globalStyles} from '../../AppStyle'
+
+var createPostStackOptions : StackNavigationOptions = 
+    {
+      headerShown:false,
+      ...TransitionPresets.SlideFromRightIOS,
+      gestureDirection:'horizontal-inverted'
+    }
 
 const RootStackNavigation : React.FC = () => {
     const rootStack = createStackNavigator<rootStackParamList>();
@@ -50,7 +59,7 @@ const RootStackNavigation : React.FC = () => {
     if (!appIsReady) {
       return (
       <View>
-        <Image style={styles.loadingImage} source={require("../../assets/ig-meta.jpg")}/>
+        <Image style={globalStyles.splashImage} source={require("../../assets/ig-meta.jpg")}/>
       </View>)
     }
     
@@ -62,9 +71,10 @@ const RootStackNavigation : React.FC = () => {
             hidden={false} 
       />
       <rootStack.Navigator initialRouteName={state.isAuthenticated ? 'main' : 'signIn'}>
-        <rootStack.Screen name='signIn' component={SignInScreen} options={{headerShown:false}}/>
-        <rootStack.Screen name='signUp' component={RegisterScreen} options={{headerShown:false}}/>
-        <rootStack.Screen name='main' component={MainNavigation} options={{headerShown:false}}/>
+          <rootStack.Screen name='main' component={MainNavigation} options={{headerShown:false}}/>
+          <rootStack.Screen name='createPost' component={AddPostStack}  options={createPostStackOptions}/>
+          <rootStack.Screen name='signIn' component={SignInScreen} options={{headerShown:false}}/>
+          <rootStack.Screen name='signUp' component={RegisterScreen} options={{headerShown:false}}/>
       </rootStack.Navigator>
     </NavigationContainer>
   )
@@ -72,9 +82,3 @@ const RootStackNavigation : React.FC = () => {
 
 export default RootStackNavigation
 
-const styles = StyleSheet.create({
-  loadingImage : {
-    width:'100%',
-    height:'100%'
-  }
-})

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Formik, FormikHelpers } from 'formik'
 import * as yup from 'yup'
@@ -11,6 +11,7 @@ import { useUserContext } from '../../contexts/UserContexts'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { auth } from '../../FireBase/firebaseConfig'
 import { usersRepo } from '../../FireBase/fireStoreFunctions'
+import { formStyle, globalStyles } from '../../../AppStyle'
 
 interface signUpInteface {
   email : string
@@ -62,15 +63,15 @@ const RegisterScreen = () => {
               placeholderText='Password'
               isPassword={true}
             />
-            <TouchableOpacity style={styles.submitButton} onPress={()=>handleSubmit()}>
+            <TouchableOpacity style={formStyle.formsubmitButton} onPress={()=>handleSubmit()}>
                 <Text style={{color : '#FFFFFF'}}>Sign up</Text>
             </TouchableOpacity>
           </FormContainer>
 
-          <View style={styles.formFooter}>
-            <Text style={styles.formSmallText}>
+          <View style={formStyle.darkFormFooter}>
+            <Text style={globalStyles.lightGreyTextsm}>
               Already have an account?
-              <Text style={{...styles.formSmallText,color : '#4285F4'}} onPress={()=>navigation.navigate('signIn')}> Sign in.</Text>
+              <Text style={globalStyles.linkTextsm} onPress={()=>navigation.navigate('signIn')}> Sign in.</Text>
             </Text>
           </View>
         </>
@@ -80,30 +81,3 @@ const RegisterScreen = () => {
 }
 
 export default RegisterScreen
-
-const styles = StyleSheet.create({
-  formSmallText : {
-    fontSize : 12,
-    color : '#A09A9A',
-    textAlign:'center'
-  },
-  submitButton : {
-    borderRadius:5,
-    justifyContent:'center',
-    alignItems:'center',
-    marginBottom: 15,
-    width : '100%',
-    height : 50,
-    fontSize : 15,
-    backgroundColor: '#4285F4'
-  },
-  formFooter : {
-    justifyContent:'center',
-    alignItems:'center',
-    width:'100%',
-    borderColor:'#535050',
-    borderTopWidth:1,
-    backgroundColor:'black',
-    height:50
-  }
-})

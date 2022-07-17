@@ -1,14 +1,16 @@
 import { Image, StyleSheet, Switch, Text, TextInput, TouchableHighlight, View } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/AntDesign'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { createPostStackParamList } from '../../types/navtypes'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { createPostStackParamList, rootStackParamList } from '../../types/navtypes'
 import * as MediaLibrary from 'expo-media-library'
 import {Formik, FormikHelpers} from 'formik'
 import * as Yup from 'yup'
 import { useUserContext } from '../../contexts/UserContexts'
 import { AppUser, Post } from '../../types/modeltypes'
 import { createPost } from '../../FireBase/fireStoreFunctions/postsRepo'
+import { globalStyles } from '../../../AppStyle'
+import { StackNavigationProp } from '@react-navigation/stack'
 
 
 interface createPostInterface {
@@ -31,7 +33,7 @@ const AddNewPostDetailsScreen : React.FC<{
   const [twitterPost, settwitterPost] = useState<boolean>(false)
   const [tumblrPost, settumblrPost] = useState<boolean>(false)
 
-
+  const navigation = useNavigation<StackNavigationProp<rootStackParamList,"createPost">>();
   const {state} = useUserContext();
   const routeProp = useRoute<RouteProp<createPostStackParamList,"postDetails">>();
   const {selectedFiles} = routeProp.params
@@ -46,9 +48,15 @@ const AddNewPostDetailsScreen : React.FC<{
       fileUrls : selectedFiles!.map(selected => selected.uri),
       caption : values.caption,
       taggedPeople : values.taggedPeople,
-      postId : ''
+      postId : '',
+      postType : (selectedFiles as Array<MediaLibrary.Asset>)[0].mediaType === MediaLibrary.MediaType.photo ? 'post' : 'reels'
     }
-    createPost(postData)
+
+    // TO DO : LOADING INDICATOR
+    createPost(postData).then( post => {
+      // TO DO : CLOSE LOADING INDICATOR
+      navigation.navigate('main');
+    })
     helpers.setSubmitting(false);
   }
 
@@ -61,7 +69,7 @@ const AddNewPostDetailsScreen : React.FC<{
       {( {values,touched,errors,handleSubmit,handleChange} ) => {
         handleSubmitRef.current = handleSubmit
         return(
-          <View style={styles.formContainer}>
+          <View style={globalStyles.darkContainer}>
             {(touched.caption && errors.caption) && 
             <View style={styles.formRow}>
               <Icon name='exclamationcircleo' style={styles.errorLabel}/>
@@ -76,26 +84,26 @@ const AddNewPostDetailsScreen : React.FC<{
                 value={values.caption}
                 placeholder="write a caption..." 
                 placeholderTextColor={'grey'} 
-                style={{...styles.formText,flex:1}}/>
+                style={[globalStyles.whiteText,{flex:1,padding:10}]}/>
             </View>
             <TouchableHighlight style={styles.formRow} onPress={()=>console.log("Tag people")}>
-              <Text style={styles.formText} >Tag people</Text>
+              <Text style={globalStyles.whiteText} >Tag people</Text>
               {/* TO DO : Tag Feature */}
             </TouchableHighlight>
             <TouchableHighlight style={styles.formRow} onPress={()=>console.log("Add Location")}>
-              <Text style={styles.formText} >Add location</Text>
+              <Text style={globalStyles.whiteText} >Add location</Text>
               {/* TO DO : LOCATION SUGGESTION */}
             </TouchableHighlight>
             <TouchableHighlight style={styles.formRow} onPress={()=>console.log("Add MUSIC")}>
-              <Text style={styles.formText} >Add music</Text>
+              <Text style={globalStyles.whiteText} >Add music</Text>
               {/* TO DO : MUSIC SUGGESTION */}
             </TouchableHighlight>
             
             <TouchableHighlight style={styles.formRow}>
-              <Text style={styles.formText} >Also post to</Text>
+              <Text style={globalStyles.whiteText} >Also post to</Text>
             </TouchableHighlight>
             <View style={styles.formRow}>
-              <Text style={styles.formText}>Facebook</Text>
+              <Text style={[globalStyles.whiteText]}>Facebook</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={"#f4f3f4"}
@@ -105,7 +113,7 @@ const AddNewPostDetailsScreen : React.FC<{
               />
             </View>
             <View style={styles.formRow}>
-              <Text style={styles.formText}>Twitter</Text>
+              <Text style={globalStyles.whiteText}>Twitter</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={"#f4f3f4"}
@@ -115,7 +123,7 @@ const AddNewPostDetailsScreen : React.FC<{
               />
             </View>
             <View style={styles.formRow}>
-              <Text style={styles.formText}>Tumblr</Text>
+              <Text style={globalStyles.whiteText}>Tumblr</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={"#f4f3f4"}
@@ -125,8 +133,8 @@ const AddNewPostDetailsScreen : React.FC<{
               />
             </View>
             <View style={styles.formRow}>
-              <Text style={styles.formText}>Advanced settings</Text>
-              <Icon name='right' style={styles.formText}/>
+              <Text style={globalStyles.whiteText}>Advanced settings</Text>
+              <Icon name='right' style={globalStyles.whiteText}/>
             </View>
               
           </View>
@@ -139,10 +147,6 @@ const AddNewPostDetailsScreen : React.FC<{
 export default AddNewPostDetailsScreen
 
 const styles = StyleSheet.create({
-  formContainer : {
-    height:'100%',
-    backgroundColor:'black'
-  },
   formRow : {
     flexDirection:'row',
     flexWrap:'wrap',
@@ -154,11 +158,6 @@ const styles = StyleSheet.create({
     width:100,
     height:100,
     resizeMode:'contain'
-  },
-  formText : {
-    color : 'white',
-    fontSize : 15,
-    padding : 10
   },
   errorLabel : {
     color : 'red',

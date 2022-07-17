@@ -1,12 +1,10 @@
-import { Dimensions, Image, StyleSheet,View } from 'react-native'
+import { Image,View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 
 import {Camera, CameraCapturedPicture} from 'expo-camera'
 import * as MediaLibrary from 'expo-media-library'
 import {CameraCapturer,GallerySelector} from '../../components/Post'
-
-
-const {width,height} = Dimensions.get('window')
+import { globalStyles } from '../../../AppStyle'
 
 const AddNewPostScreen : React.FC<{
   assets : Array<MediaLibrary.Asset>,
@@ -29,7 +27,7 @@ const AddNewPostScreen : React.FC<{
   }
   
   return (
-    <View style={styles.MainContainer}>
+    <View style={globalStyles.darkContainer}>
       {
         postingMode === "cameraActive" ?
           <CameraCapturer 
@@ -39,7 +37,7 @@ const AddNewPostScreen : React.FC<{
             closeFunction={()=>setPostingMode("gallery")}/>
       : postingMode === 'previewCapture' ? 
           <View>
-            <Image source={{uri : capturedPicture?.uri}} style={styles.capturedPicture}/>
+            <Image source={{uri : capturedPicture?.uri}} style={globalStyles.imgFullScreen}/>
           </View> 
       : postingMode === 'gallery' &&
           <GallerySelector 
@@ -55,16 +53,3 @@ const AddNewPostScreen : React.FC<{
 
 
 export default AddNewPostScreen
-
-const styles = StyleSheet.create({
-    MainContainer : {
-      flex:1,
-      justifyContent:'center',
-      alignItems:'center'
-    },
-    capturedPicture : {
-      width : width,
-      height : height,
-      resizeMode : 'cover'
-    }
-})

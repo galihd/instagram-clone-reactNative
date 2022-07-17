@@ -13,6 +13,7 @@ import AddNewPostScreen from '../screens/Post/AddNewPostScreen'
 var stackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.ReactNode)=>StackNavigationOptions = (leftButton?,title?,rightButton?) => ({
     headerStyle:{backgroundColor:'black'},
     headerTintColor:'white',
+    headerRightContainerStyle:{paddingHorizontal : 10},
     headerBackImage :  ()=>leftButton ? leftButton : <IconButton iconName='arrow-left' btnSize={'large'}/>,
     headerTitle : title && title,
     headerRight : ()=>rightButton ? rightButton : null,
