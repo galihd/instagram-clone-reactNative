@@ -1,37 +1,27 @@
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import React, { SetStateAction, useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { Post, AppUser,Comment, Like } from '../../types/modeltypes'
+import { Post, AppUser,Comment, Like } from '../types/modeltypes'
 import { useNavigation } from '@react-navigation/native'
-import { mainStackParamList } from '../../types/navtypes'
+import { mainStackParamList } from '../types/navtypes'
 import { StackNavigationProp } from '@react-navigation/stack'
-import IconButton from '../IconButton'
-import { useUserContext } from '../../contexts/UserContexts'
-import { createLike, deleteLike, findAllPostByUserGroup } from '../../FireBase/fireStoreFunctions/postsRepo'
-import { downloadImage, downloadImages } from '../../FireBase/fireStorage'
+import IconButton from './IconButton'
+import { useUserContext } from '../contexts/UserContexts'
+import { createLike, deleteLike} from '../FireBase/fireStoreFunctions/postsRepo'
 import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view'
-import { globalStyles } from '../../../AppStyle'
-import { useFeedContext } from '../../contexts/FeedContexts'
-import { loadFeeds} from '../../contexts/FeedContexts/FeedContextAction'
+import { globalStyles } from '../../AppStyle'
+import { useFeedContext } from '../contexts/FeedContexts'
+import { loadFeeds} from '../contexts/FeedContexts/FeedContextAction'
 
-const {width,height} = Dimensions.get('window');
-const Feeds = () => {
-    const feedContext = useFeedContext()
-    const {state} = useUserContext();
+const {width} = Dimensions.get('window');
+const Feeds : React.FC<{postsFeeds : Post[]}> = ({postsFeeds}) => {
 
-    useEffect(() => {
-        feedContext.state.FeedItems.length === 0 &&
-        loadFeeds([state.user?.appUserId!]).then(feedContext.dispatch)
-           
-      return () => {
-        
-      }
-    }, [])
+
     
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
         {
-            feedContext.state.FeedItems.map((post,index)=>
+            postsFeeds.map((post,index)=>
                 <View key={index}>
                     <PostHeader userData={post.appUser}/>
                     <PostDetails postData={post}/>

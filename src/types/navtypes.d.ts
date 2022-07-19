@@ -24,6 +24,7 @@ export type mainTabParamList = {
     Reels : undefined
     Shop : undefined
     Profile : undefined
+
 }
 
 export type mainStackParamList = {
@@ -37,6 +38,9 @@ export type mainStackParamList = {
     }
     likes : {
         post : Post
+    }
+    ProfilePost : {
+        posts : Array<Post>
     }
 }
 

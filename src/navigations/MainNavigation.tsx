@@ -16,6 +16,7 @@ import IconButtonBadged from '../components/iconButtonBadged';
 import { Camera } from 'expo-camera'
 import * as MediaLibrary from 'expo-media-library'
 import { useNavigation } from '@react-navigation/native';
+import PostsScreen from '../screens/Post/PostsScreen';
 
 
 const mainStack = createStackNavigator<mainStackParamList>();
@@ -68,6 +69,7 @@ const HomeStack = () => {
         <mainStack.Screen name='profile' component={ProfileScreen} options={commonStackOptions()}/>
         <mainStack.Screen name='comments' component={CommentScreen} options={commonStackOptions(null,<Text style={globalStyles.whiteTextLg}>Comments</Text>,<Icon name='send' style={styles.headerBtnRotate}/>)}/>
         <mainStack.Screen name='likes' component={LikesScreen} options={commonStackOptions(null,<Text style={globalStyles.whiteTextLg}>Likes</Text>,null)}/>
+        <mainStack.Screen name='ProfilePost' component={PostsScreen} options={commonStackOptions(null,<Text style={globalStyles.whiteTextLg}>Posts</Text>,null)}/>
     </mainStack.Navigator>
   )
 }
@@ -82,6 +84,7 @@ const ProfileStack = () => {
           appUserId : state.user!.appUserId,
           fromHomeTab : true}}
         options={{...commonStackOptions(),headerShown:false}}/>
+      <mainStack.Screen name='ProfilePost' component={PostsScreen} options={commonStackOptions(null,<Text style={globalStyles.whiteTextLg}>Posts</Text>,null)}/>
     </mainStack.Navigator>
   )
 }
