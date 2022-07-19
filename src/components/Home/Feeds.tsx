@@ -1,24 +1,27 @@
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import React, { SetStateAction, useEffect, useState } from 'react'
-import Icon from 'react-native-vector-icons/FontAwesome5'
-import { Post, AppUser,Comment } from '../../types/modeltypes'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { Post, AppUser,Comment, Like } from '../../types/modeltypes'
 import { useNavigation } from '@react-navigation/native'
 import { mainStackParamList } from '../../types/navtypes'
 import { StackNavigationProp } from '@react-navigation/stack'
 import IconButton from '../IconButton'
 import { useUserContext } from '../../contexts/UserContexts'
-import { findAllPostByUserGroup } from '../../FireBase/fireStoreFunctions/postsRepo'
+import { createLike, deleteLike, findAllPostByUserGroup } from '../../FireBase/fireStoreFunctions/postsRepo'
 import { downloadImage, downloadImages } from '../../FireBase/fireStorage'
 import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view'
+import { globalStyles } from '../../../AppStyle'
+import { useFeedContext } from '../../contexts/FeedContexts'
+import { loadFeeds} from '../../contexts/FeedContexts/FeedContextAction'
 
 const {width,height} = Dimensions.get('window');
 const Feeds = () => {
-    const [feedItems, setfeedItems] = useState<Array<Post>>([]);
+    const feedContext = useFeedContext()
     const {state} = useUserContext();
 
     useEffect(() => {
-        feedItems.length === 0 &&
-        findAllPostByUserGroup([state.user?.appUserId!]).then(posts => setfeedItems(posts))
+        feedContext.state.FeedItems.length === 0 &&
+        loadFeeds([state.user?.appUserId!]).then(feedContext.dispatch)
            
       return () => {
         
@@ -28,7 +31,7 @@ const Feeds = () => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
         {
-            feedItems.map((post,index)=>
+            feedContext.state.FeedItems.map((post,index)=>
                 <View key={index}>
                     <PostHeader userData={post.appUser}/>
                     <PostDetails postData={post}/>
@@ -39,10 +42,13 @@ const Feeds = () => {
   )
 }
 
-const PostHeader : React.FC<{ userData : AppUser}> = ({userData : {avatarUrl,username}}) => {
+const PostHeader : React.FC<{ userData : AppUser}> = ({userData : {avatarUrl,username,appUserId}}) => {
+    const navigation = useNavigation<StackNavigationProp<mainStackParamList,"home">>();
     return(
         <View style={styles.headerContainer}>
-            <TouchableOpacity style={{flexDirection : 'row', alignItems:'center'}}>
+            <TouchableOpacity 
+                style={{flexDirection : 'row', alignItems:'center'}} 
+                onPress={()=>{navigation.navigate('profile',{appUserId: appUserId,fromHomeTab:false})}}>
                 <Image source={{uri : avatarUrl}} style={styles.headerImg}/>
                 <Text style={{color : 'white', marginLeft:6}}>{username}</Text>
             </TouchableOpacity>
@@ -60,7 +66,7 @@ const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<
     
     if(fileUrls.length === 1)
         return (
-        <TouchableHighlight>
+        <TouchableHighlight style={{width:'100%',height:450}}>
             <Image style={styles.postImg} source={{uri : fileUrls[0]}}/>
         </TouchableHighlight>
         )
@@ -130,20 +136,40 @@ const PostPagerIndicator : React.FC<{
 
 const PostDetails : React.FC<{postData : Post}> = (
     {postData }) =>{
-    const [liked, setliked] = useState<boolean>(false);
+    const [like, setlike] = useState<Like>();
+    const [saved, setSaved] = useState<boolean>(false);
     const [pagerIndexState, setPagerIndexState] = useState<number>(0);
-    const navigation = useNavigation<StackNavigationProp<mainStackParamList,"home">>();
-    
 
+    const navigation = useNavigation<StackNavigationProp<mainStackParamList,"home">>();
+    const {state} = useUserContext();
+    const likePost = () => {
+        if(!like){
+            postData.likesCount++;
+            createLike({
+                likeId :'',
+                targetType : 'post',
+                targetId : postData.postId,
+                appUser : state.user!
+            }).then(setlike)
+        }else{
+            postData.likesCount--;
+            deleteLike(like)
+            .then(()=>setlike(undefined));
+        }
+    }
     return(
         <View>
             <PostImage postData={postData} setPagerIndexState={setPagerIndexState}/>
             
             <View style={styles.headerContainer}>
                 <View style={{flexDirection:'row',alignItems:'center'}}>
-                    <Icon name='heart' style={styles.footerIcon}/>
-                    <Icon name='comment' style={styles.footerIcon}/>
-                    <Icon name='paper-plane' style={styles.footerIcon}/>
+                    <Icon 
+                        name={ like ? 'heart' : 'heart-o'} 
+                        style={like ? styles.footerIconHeart : styles.footerIcon}
+                        onPress={likePost}/>
+                    <Icon name='comment-o' style={styles.footerIcon} 
+                        onPress={()=> navigation.navigate('comments',{post : postData})}/>
+                    <Icon name='paper-plane-o' style={styles.footerIcon}/>
                 </View>
                 {
                     postData.fileUrls.length > 1 && 
@@ -151,21 +177,26 @@ const PostDetails : React.FC<{postData : Post}> = (
                             pageCount={postData.fileUrls.length} 
                             activePage={pagerIndexState}/>
                 }
-                <Icon name='bookmark' style={styles.footerIcon}/>
+                <Icon name={saved ? 'bookmark' : 'bookmark-o'} 
+                    style={styles.footerIcon}
+                    onPress={()=>{setSaved(!saved)}}/>
             </View>
 
             <View style={{paddingHorizontal:15}}>
-                <Text style={[styles.footerText,styles.boldText]}>{postData.likesCount} likes</Text>
-                <Text style={styles.footerText}>
-                    <Text style={styles.boldText}>{postData.appUser.username}</Text>
+                <Text style={[globalStyles.whiteText,globalStyles.boldText]} onPress={()=>navigation.navigate('likes',{post : postData})}>
+                    {postData.likesCount} likes
+                </Text>
+                <Text style={globalStyles.whiteText}>
+                    <Text style={globalStyles.boldText}>{postData.appUser.username}</Text>
                     {` ${postData.caption}`}
                 </Text>
                 {
                     postData.commentCount > 1 ? 
-                    <Text style={{...styles.footerText,color:'grey'}} onPress={()=> navigation.navigate('comments',{post : postData})}>{`view all ${postData.commentCount} comments`}</Text> :
+                    <Text style={globalStyles.lightGreyText} onPress={()=> navigation.navigate('comments',{post : postData})}>{`view all ${postData.commentCount} comments`}</Text> :
                     postData.commentCount == 1 &&
-                    <Text style={{...styles.footerText,color:'grey'}} onPress={()=> navigation.navigate('comments',{post : postData})}>{`view ${postData.commentCount} comment`}</Text>
+                    <Text style={globalStyles.lightGreyText} onPress={()=> navigation.navigate('comments',{post : postData})}>{`view ${postData.commentCount} comment`}</Text>
                 }
+
             </View>
         </View>
     )
@@ -179,7 +210,6 @@ const styles = StyleSheet.create({
         flexDirection : 'row',
         justifyContent : 'space-between',
         alignItems : 'center',
-        color : 'white',
         padding : 10
     },
     headerImg : {
@@ -197,12 +227,10 @@ const styles = StyleSheet.create({
         marginHorizontal : 6,
         color : 'white'
     },
-    footerText :{
-        color:'white',
-        marginTop : 3
-    },
-    boldText : {
-        fontWeight: '600'
+    footerIconHeart : {
+        fontSize : 25,
+        marginHorizontal : 6,
+        color : 'red'
     }
 })
 

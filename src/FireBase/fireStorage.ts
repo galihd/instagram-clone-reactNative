@@ -12,7 +12,7 @@ export const uploadPost = (postData : Post) : Promise<string[]> => {
         const uploadRef = ref(postsRef,`${postData.appUser.appUserId}/${postData.postId}/${index}.jpg`)
         const file : File = await (await fetch(url)).blob();
         const result = await uploadBytes(uploadRef,file);
-        return result.ref.toString()
+        return result.ref.fullPath
     })
     return Promise.all(fileUrls);
 }
@@ -21,9 +21,8 @@ export const downloadImages = (fileUrls : string[]) => Promise.all( fileUrls.map
 
 export const downloadImage = (fileUrl : string ) => getDownloadURL( ref(storageRef,fileUrl) )
 
-export const downloadImageAsBase64 = async (fileUrl : string) => {
-    const downloadableUrl = await getDownloadURL ( ref(storageRef,fileUrl) );
-    const fileBlob = await fetch(downloadableUrl).then(response => response.blob());
+export const downloadImageAsBase64 = async (downloadableFileUrl : string) => {
+    const fileBlob = await fetch(downloadableFileUrl).then(response => response.blob());
     
     const convertBlobToBase64 = (blob : Blob) => new Promise<string>((resolve, reject) => {
         const reader = new FileReader;

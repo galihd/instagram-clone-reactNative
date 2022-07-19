@@ -25,7 +25,7 @@ export type feedContextStateType = {
 
 export type feedContextAction = {
     type : string
-    payload : Post | null
+    payload : Post | Post[] | null
 }
 
 export type feedContextType = {

@@ -7,21 +7,9 @@ export type rootStackParamList = {
     signIn : undefined
     signUp : undefined
     main : undefined
-}
-
-export type mainStackParamList = {
-    home : undefined
-    Profile : {
-        appUserId : string
-    }
-    comments : {
-        post : Post
-    }
-    likes : {
-        postId : string
-    }
     createPost : undefined
 }
+
 
 export type createPostStackParamList = {
     addNewPost : undefined
@@ -29,3 +17,32 @@ export type createPostStackParamList = {
         selectedFiles : Array<MediaLibrary.Asset> | CameraCapturedPicture[] | undefined
     }
 }
+
+export type mainTabParamList = {
+    Home : undefined
+    Search : undefined
+    Reels : undefined
+    Shop : undefined
+    Profile : undefined
+}
+
+export type mainStackParamList = {
+    home : undefined
+    profile : {
+        appUserId : string
+        fromHomeTab : boolean
+    }
+    comments : {
+        post : Post
+    }
+    likes : {
+        post : Post
+    }
+}
+
+export type profileTobTabParamList = {
+    userPosts : undefined
+    userReels : undefined
+    userTagged : undefined
+}
+

@@ -33,9 +33,16 @@ export const globalStyles = StyleSheet.create({
         fontSize : 12,
         color : '#A09A9A',
     },
+    lightGreyText : {
+        fontSize : 15,
+        color : '#A09A9A',
+    },
     lightGreyTextlg : {
         fontSize : 20,
         color : '#A09A9A',
+    },
+    boldText : {
+        fontWeight : '500'
     },
     linkTextsm : {
         color : '#4285F4',

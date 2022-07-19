@@ -2,14 +2,16 @@
 export type AppUser = {
     appUserId : string
     email : string
-    username? : string
-    phoneNumber? : string
     avatarUrl : string
+    username : string
+    phoneNumber? : string
+    bio? : string
 }
 
 
 export type Post = {
-    postId : string
+    postId : string,
+    appUserId? : string
     appUser : AppUser
     fileUrls : string[]
     caption? : string
@@ -18,19 +20,33 @@ export type Post = {
     likesCount : number
     commentCount : number
     createdAt : Date
+    postType : "post" | "reels"
 }
 
 export type Comment = {
     commentId : string
     postId : string
+    appUserId? : string
     appUser : AppUser
     comment : string
+    targetType : 'post' | 'comment'
+    targetCommentId? : string
+    likesCount : number
+    createdAt : Date
 }
 
 export type Like = {
     likeId : string
-    postId : string
+    targetType : 'post' | 'comment'
+    targetId : string
+    appUserId ? : string
     appUser : AppUser
+}
+
+export type FollowType = {
+    followId: string
+    fromUserId : string
+    toUserId : string
 }
 
 

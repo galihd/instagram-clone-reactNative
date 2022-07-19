@@ -9,7 +9,7 @@ const AppUserConverter : FirestoreDataConverter<AppUser> = {
     toFirestore : ({appUserId,...rest}) => rest
 } 
 
-const appUserCollections = collection(db,"AppUsers").withConverter(AppUserConverter)
+export const appUserCollections = collection(db,"AppUsers").withConverter(AppUserConverter)
 
 export const convertAppUserToDownloadable = async (appUserData : AppUser) : Promise<AppUser> =>({
     ...appUserData,
