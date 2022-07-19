@@ -76,5 +76,5 @@ dist/
 # @end expo-cli
 
 
-# dummieData
-src/dummieData
+# data
+src/dummieData/
