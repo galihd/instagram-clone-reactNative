@@ -32,6 +32,7 @@ export type Comment = {
     targetType : 'post' | 'comment'
     targetCommentId? : string
     likesCount : number
+    replyCount : number
     createdAt : Date
 }
 
