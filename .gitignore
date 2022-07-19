@@ -11,6 +11,9 @@ npm-debug.*
 web-build/
 
 
+# data
+src/testData/
+
 # macOS
 .DS_Store
 
@@ -75,6 +78,3 @@ dist/
 
 # @end expo-cli
 
-
-# data
-src/dummieData/
