@@ -13,7 +13,7 @@ web-build/
 
 # data
 src/testData/
-src/Firebase/firebaseConfig.*
+src/Firebase/firebaseConfig.ts
 
 
 # macOS
