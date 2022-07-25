@@ -7,11 +7,12 @@ import { mainStackParamList } from '../types/navtypes'
 import { StackNavigationProp } from '@react-navigation/stack'
 import IconButton from './IconButton'
 import { useUserContext } from '../contexts/UserContexts'
-import { createLike, deleteLike} from '../FireBase/fireStoreFunctions/postsRepo'
+import { createLike, deleteAllLikesByPostId, deleteLike} from '../FireBase/fireStoreFunctions/postsRepo'
 import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view'
 import { globalStyles } from '../../AppStyle'
 import { useFeedContext } from '../contexts/FeedContexts'
-import { loadFeeds} from '../contexts/FeedContexts/FeedContextAction'
+import { deletePostRequest, loadFeeds} from '../contexts/FeedContexts/FeedContextAction'
+import BottomDrawer from './BottomDrawer'
 
 const {width} = Dimensions.get('window');
 const Feeds : React.FC<{postsFeeds : Post[]}> = ({postsFeeds}) => {
@@ -23,7 +24,7 @@ const Feeds : React.FC<{postsFeeds : Post[]}> = ({postsFeeds}) => {
         {
             postsFeeds.map((post,index)=>
                 <View key={index}>
-                    <PostHeader userData={post.appUser}/>
+                    <PostHeader postData={post}/>
                     <PostDetails postData={post}/>
                 </View>
             )
@@ -32,17 +33,64 @@ const Feeds : React.FC<{postsFeeds : Post[]}> = ({postsFeeds}) => {
   )
 }
 
-const PostHeader : React.FC<{ userData : AppUser}> = ({userData : {avatarUrl,username,appUserId}}) => {
+const PostHeader : React.FC<{ postData : Post}> = ({postData}) => {
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
     const navigation = useNavigation<StackNavigationProp<mainStackParamList,"home">>();
+    const userContext = useUserContext();
+    const feedContext = useFeedContext();
+
+
+
+    const deletePost = () => {
+        setDrawerOpen(false);
+        // TO DO : LOADING
+        deletePostRequest(postData)
+        .then(feedContext.dispatch)
+        // TO DO : CLOSE LOADING
+
+    }
     return(
         <View style={styles.headerContainer}>
             <TouchableOpacity 
                 style={{flexDirection : 'row', alignItems:'center'}} 
-                onPress={()=>{navigation.navigate('profile',{appUserId: appUserId,fromHomeTab:false})}}>
-                <Image source={{uri : avatarUrl}} style={styles.headerImg}/>
-                <Text style={{color : 'white', marginLeft:6}}>{username}</Text>
+                onPress={()=>{navigation.navigate('profile',{appUserId: postData.appUser.appUserId,fromHomeTab:false})}}>
+                <Image source={{uri : postData.appUser.avatarUrl}} style={styles.headerImg}/>
+                <Text style={{color : 'white', marginLeft:6}}>{postData.appUser.username}</Text>
             </TouchableOpacity>
-            <IconButton iconName='dots-vertical' btnSize='small'/>
+            <IconButton iconName='dots-vertical' btnSize='small' pressFunction={()=>setDrawerOpen(true)}/>
+            {
+                drawerOpen && 
+                <BottomDrawer 
+                    isOpen={drawerOpen}
+                    size = 'large' 
+                    closeFuntion={()=>setDrawerOpen(false)}>
+                        { postData.appUser.appUserId ===  userContext.state.user?.appUserId ?
+                        <>
+                            <View style={globalStyles.flexRowSpaceAround}>
+                                <View style={{alignItems:'center'}}>
+                                    <Icon name='share-alt' style={[styles.drawerCircleButton]}/>
+                                    <Text style={globalStyles.whiteText}>Share</Text>
+                                </View>
+                                <View style={{alignItems:'center'}}>
+                                    <Icon name='link' style={[styles.drawerCircleButton]}/>
+                                    <Text style={globalStyles.whiteText}>Link</Text>
+                                </View>
+                            </View>
+                            <View style={{height: StyleSheet.hairlineWidth, backgroundColor: '#A09A9A'}} />
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]}>Post to other apps...</Text>
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]}>Pin to your profile</Text>
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]}>Archive</Text>
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]} onPress={deletePost} >Delete</Text>
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]}>Edit</Text>
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]}>Hide like count</Text>
+                            <Text style={[globalStyles.whiteText,{paddingHorizontal:10,marginVertical:3}]}>Turn off commenting</Text>
+                        </>
+                            :
+                        <>
+                        </>
+                        }
+                </BottomDrawer>
+            }
         </View>
     )
 }
@@ -221,6 +269,19 @@ const styles = StyleSheet.create({
         fontSize : 25,
         marginHorizontal : 6,
         color : 'red'
+    },
+    drawerCircleButton : {
+        width : 75,
+        height : 75,
+        borderRadius : 50,
+        backgroundColor : 'transparent',
+        borderWidth : 1,
+        borderColor : '#A09A9A',
+        color : 'white',
+        fontSize : 30,
+        fontWeight : '200',
+        textAlign : 'center',
+        textAlignVertical: 'center'
     }
 })
 
