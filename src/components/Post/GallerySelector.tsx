@@ -13,9 +13,10 @@ const GallerySelector : React.FC<{
     assets : Array<MediaLibrary.Asset>,
     selectedFilesState : MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined,
     setSelectFileFunction : React.Dispatch<React.SetStateAction<MediaLibrary.Asset[] | CameraCapturedPicture[] | undefined>>
-    closeFunction : ()=>void,
+    showUtility? : boolean 
+    closeFunction? : ()=>void,
 
-  }> = ({assets,selectedFilesState,setSelectFileFunction,closeFunction}) => {
+  }> = ({assets,selectedFilesState,setSelectFileFunction,closeFunction,showUtility = true}) => {
     const [previewFile, setPreviewFile] = useState<MediaLibrary.Asset>();
     const [allowMultiple, setAllowMultiple] = useState<boolean>(false);
 
@@ -43,6 +44,8 @@ const GallerySelector : React.FC<{
   return (
     <>
         <PreviewPane previewFile={previewFile}/>
+        
+        {showUtility &&
         <View style={styles.utilityBar}>
           <View style={{backgroundColor: allowMultiple ? 'grey' : 'black'}}>
             <IconButton iconName='card-multiple' btnSize='medium' pressFunction={()=>setAllowMultiple(!allowMultiple)}>
@@ -51,6 +54,7 @@ const GallerySelector : React.FC<{
           </View>
           <IconButton iconName='camera' btnSize='medium' pressFunction={closeFunction}/>
         </View>
+        }
 
         {assets && 
           <ScrollView style={globalStyles.darkContainer} contentContainerStyle={gridStyle.gridContentContainer}>

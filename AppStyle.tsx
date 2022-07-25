@@ -17,6 +17,11 @@ export const globalStyles = StyleSheet.create({
         flex :1,
         backgroundColor : 'black',
     },
+    overlayContainer : {
+        flex :1,
+        backgroundColor : 'rgba(0,0,0,0.2)',
+        justifyContent : 'flex-end'
+    },
     whiteTextSm:{
         fontSize : 12,
         color : 'white'
@@ -43,6 +48,11 @@ export const globalStyles = StyleSheet.create({
     },
     boldText : {
         fontWeight : '500'
+    },
+    linkText : {
+        color : '#4285F4',
+        textAlign:'center',
+        fontSize : 15
     },
     linkTextsm : {
         color : '#4285F4',

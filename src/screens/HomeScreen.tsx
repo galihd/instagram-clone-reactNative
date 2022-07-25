@@ -14,11 +14,8 @@ const HomeScreen = () => {
   useEffect(() => {
     feedContext.state.FeedItems.length === 0 &&
     loadFeeds([state.user?.appUserId!]).then(feedContext.dispatch)
-       
-  return () => {
-    
-  }
-}, [])
+
+  }, [])
   return (
     <SafeAreaView style={globalStyles.darkContainer}>
       <Stories/>
