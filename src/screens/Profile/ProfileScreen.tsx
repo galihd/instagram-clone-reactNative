@@ -1,4 +1,4 @@
-import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -112,9 +112,11 @@ const ProfileScreen = () => {
       <View style={styles.profileyContainer}>
         {isMyProfile ? 
         <>
-          <View style={[styles.profilexContainer,styles.buttonPadding,styles.darkProfileButton,{marginEnd:5}]}>
-            <Text style={[globalStyles.whiteText]}>Edit profile</Text>
-          </View>
+          <TouchableOpacity 
+            onPress={()=>navigation.navigate('ProfileEdit',{})}
+            style={[styles.profilexContainer,styles.buttonPadding,styles.darkProfileButton,{marginEnd:5}]}>
+            <Text style={[globalStyles.whiteText]} >Edit profile</Text>
+          </TouchableOpacity>
           <View style={styles.darkProfileButton}>
             <IconButton iconName='account-plus-outline' btnSize={'small'} />
           </View>

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableHighlight, View} from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import ExploreScreen from '../screens/ExploreScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -17,6 +17,7 @@ import { Camera } from 'expo-camera'
 import * as MediaLibrary from 'expo-media-library'
 import { useNavigation } from '@react-navigation/native';
 import PostsScreen from '../screens/Post/PostsScreen';
+import {EditProfileScreen,EditProfileGalleryScreen} from '../screens/Profile/EditProfileScreen';
 
 
 const mainStack = createStackNavigator<mainStackParamList>();
@@ -32,7 +33,8 @@ var commonStackOptions : (
     headerBackImage :  ()=>leftButton ? leftButton : <IconButton iconName='arrow-left' btnSize={'large'}/>,
     headerTitle : () =>title && title,
     headerRight : ()=>rightButton ? rightButton : null,
-    ...TransitionPresets.SlideFromRightIOS,
+    headerMode:'screen',
+    ...TransitionPresets.SlideFromRightIOS
   })
 
 const HomeStack = () => {
@@ -49,10 +51,7 @@ const HomeStack = () => {
 
   return (
     <mainStack.Navigator 
-      detachInactiveScreens={false}
-      screenOptions={{
-        headerMode : 'float'
-      }}>
+      detachInactiveScreens={false}>
         <mainStack.Screen name='home' component={HomeScreen} 
         options={
           commonStackOptions(
@@ -84,7 +83,28 @@ const ProfileStack = () => {
           appUserId : state.user!.appUserId,
           fromHomeTab : true}}
         options={{...commonStackOptions(),headerShown:false}}/>
+
       <mainStack.Screen name='ProfilePost' component={PostsScreen} options={commonStackOptions(null,<Text style={globalStyles.whiteTextLg}>Posts</Text>,null)}/>
+
+      <mainStack.Screen name='ProfileEdit' 
+        component={EditProfileScreen}
+        options={
+          {...commonStackOptions(
+          <IconButton iconName='close' btnSize={'large'}/>,
+          <Text style={globalStyles.whiteText}>Edit Profile</Text>),
+          ...TransitionPresets.RevealFromBottomAndroid
+          }}/>
+
+      <mainStack.Screen name='ProfileGallery' 
+        component={EditProfileGalleryScreen}
+        options={
+          {...commonStackOptions(
+          <IconButton iconName='close' btnSize={'large'}/>,
+          <Text style={globalStyles.whiteText}>Gallery</Text>),
+          ...TransitionPresets.RevealFromBottomAndroid
+          }}/>
+
+        
     </mainStack.Navigator>
   )
 }

@@ -42,6 +42,10 @@ export type mainStackParamList = {
     ProfilePost : {
         posts : Array<Post>
     }
+    ProfileEdit : {
+        newAvatar? : MediaLibrary.Asset
+    }
+    ProfileGallery : undefined
 }
 
 export type profileTobTabParamList = {
