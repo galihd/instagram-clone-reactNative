@@ -1,4 +1,4 @@
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import IconButton from '../IconButton';
 import BottomDrawer from '../BottomDrawer';
 import { globalStyles } from '../../../AppStyle';
-import { loadUsersDataFromStorage, setRelation, signIn} from '../../contexts/UserContexts/UserContextAction';
+import { loadUsersDataFromStorage, signIn} from '../../contexts/UserContexts/UserContextAction';
 import { AppUser } from '../../types/modeltypes';
 
 const Header = () => {
