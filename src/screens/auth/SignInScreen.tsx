@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { rootStackParamList } from '../../types/navtypes'
-import { StackActions, useNavigation } from '@react-navigation/native'
+import { CommonActions, useNavigation} from '@react-navigation/native'
 import {Formik, FormikHelpers} from 'formik'
 import * as Yup from 'yup'
 import { FormContainer, FormInput } from '../../components/Forms'
@@ -10,9 +10,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import { auth } from '../../FireBase/firebaseConfig'
 import { useUserContext } from '../../contexts/UserContexts'
-import { signIn } from '../../contexts/UserContexts/UserContextAction'
+import { setRelation, signIn } from '../../contexts/UserContexts/UserContextAction'
 import { usersRepo } from '../../FireBase/fireStoreFunctions'
-import { downloadImage, downloadImageAsBase64 } from '../../FireBase/fireStorage'
 import { formStyle, globalStyles } from '../../../AppStyle'
 
 
@@ -31,23 +30,24 @@ const validationSchema = Yup.object({
   password : Yup.string().min(8).required()
 })
 
-const SignInScreen = () => {
+const SignInScreen : React.FC<{
+  navigation : StackNavigationProp<rootStackParamList,"signIn">
+}> = ({navigation}) => {
     const {state,dispatch} = useUserContext();
-    const navigation = useNavigation<StackNavigationProp<rootStackParamList,"signIn">>();
-
 
     const logIn = (values : signInInterface,helpers : FormikHelpers<signInInterface>) => {
       signInWithEmailAndPassword(auth,values.username,values.password)
       .then(async response => {
         const signedUser = await usersRepo.findAppUserByEmail(response.user.email!);
-        const userAvatar = await downloadImageAsBase64(signedUser.avatarUrl!);
-        dispatch( signIn({...signedUser,avatarUrl : userAvatar}) );
+        await signIn(signedUser).then(dispatch)
+        navigation.dispatch(CommonActions.reset({
+          index : 1,
+          routes : [{name : 'main'}]
+        }))
       })
+
       .catch(er => console.log(er))
     }
-    useEffect(() => {
-      if(state.isAuthenticated)navigation.dispatch(StackActions.replace('main'))
-    }, [state.isAuthenticated])
     
 
   return (
