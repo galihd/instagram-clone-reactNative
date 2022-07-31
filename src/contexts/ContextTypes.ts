@@ -1,15 +1,17 @@
 import React from "react"
-import { AppUser, Post } from "../types/modeltypes"
+import { AppUser, Follow, FollowRelation, Post } from "../types/modeltypes"
 
 //USER CONTEXT===================================
 export type userContextStateType = {    
     isAuthenticated : boolean
     user : AppUser | undefined
+    userPosts : Post[]
+    relation : FollowRelation
 }
 
 export type userContextAction = {
     type : string
-    payload : AppUser | null
+    payload : AppUser | FollowRelation | Follow | Post | Post[] | string | null
 }
 
 export type userContextType = {

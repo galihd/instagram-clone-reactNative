@@ -2,27 +2,27 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createStackNavigator, StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack'
 import { createPostStackParamList } from '../types/navtypes'
 import IconButton from '../components/IconButton'
-import { useNavigation } from '@react-navigation/native'
 import * as MediaLibrary from 'expo-media-library'
 import { CameraCapturedPicture} from 'expo-camera'
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AddNewPostDetailsScreen from '../screens/Post/AddNewPostDetailsScreen'
 import AddNewPostScreen from '../screens/Post/AddNewPostScreen'
+import { globalStyles } from '../../AppStyle'
 
 
 var stackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.ReactNode)=>StackNavigationOptions = (leftButton?,title?,rightButton?) => ({
     headerStyle:{backgroundColor:'black'},
     headerTintColor:'white',
     headerRightContainerStyle:{paddingHorizontal : 10},
-    headerBackImage :  ()=>leftButton ? leftButton : <IconButton iconName='arrow-left' btnSize={'large'}/>,
+    headerBackImage :  ()=>leftButton ? leftButton : <Icon name='arrow-left' style={globalStyles.headerBtn}/>,
     headerTitle : title && title,
     headerRight : ()=>rightButton ? rightButton : null,
 })
 
 
+const CreatePostStack = createStackNavigator<createPostStackParamList>();
+
 const AddPostStack = () => {
-    const CreatePostStack = createStackNavigator<createPostStackParamList>();
-    const navigation = useNavigation<StackNavigationProp<createPostStackParamList,"addNewPost">>();
     const [assets, setAssets] = useState<Array<MediaLibrary.Asset>>([])
     const [selectedFiles, setselectedFiles] = useState<Array<MediaLibrary.Asset> | Array<CameraCapturedPicture>>();
 
@@ -53,7 +53,7 @@ const AddPostStack = () => {
   return (
     <CreatePostStack.Navigator initialRouteName='addNewPost'>
       <CreatePostStack.Screen name='addNewPost' 
-        options={stackOptions(<IconButton iconName='close' btnSize={'large'}/>,
+        options={({navigation,route}) => stackOptions(<Icon name='close' style={globalStyles.headerBtn}/>,
           "New Post",
           selectedFiles &&
           <IconButton 
@@ -75,7 +75,7 @@ const AddPostStack = () => {
             pressFunction={()=>createPost()}
           />
           )}>
-        {props => <AddNewPostDetailsScreen handleSubmitRef={handleSubmitRef}/>}
+        {props => <AddNewPostDetailsScreen navigation={props.navigation} handleSubmitRef={handleSubmitRef}/>}
       </CreatePostStack.Screen>
     </CreatePostStack.Navigator>
   )

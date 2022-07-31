@@ -32,6 +32,13 @@ export const findAppUserById = async (appUserId : string ) : Promise<AppUser> =>
     const result = (await getDoc(doc(appUserCollections,appUserId))).data()!;
     return convertAppUserToDownloadable(result);
 }
+
+export const findAllUsersByIdArray = async (userIds : string[]) : Promise<AppUser[]> =>{
+    const qSnap = await getDocs( query(appUserCollections,where('appUserId','in',userIds)) );
+    const result : AppUser[] = qSnap.docs.map(rs => rs.data());
+    return Promise.all(result.map(convertAppUserToDownloadable));
+}
+
 export const findAppUserByEmail = async (email : string ) : Promise<AppUser> => {
     const qSnap = await getDocs(query(appUserCollections,where("email","==",email)));
     const result : AppUser = qSnap.docs[0].data();
@@ -53,7 +60,7 @@ export const findAllAppUsersByField = async (field : string,value : string) : Pr
 }
 export const saveUser = async (appUser : AppUser) : Promise<AppUser> => {
     await updateDoc(doc(appUserCollections,appUser.appUserId),{...appUser})
-    return appUser;
+    return findAppUserById(appUser.appUserId);
 }
 
 

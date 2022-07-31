@@ -1,4 +1,4 @@
-import { Animated, Dimensions, Modal, PanResponder, StyleSheet, TouchableOpacity,} from 'react-native'
+import { Animated, Dimensions, Modal, PanResponder, StyleSheet, TouchableOpacity, View,} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { globalStyles } from '../../AppStyle'
 
@@ -19,13 +19,17 @@ const BottomDrawer : React.FC<props> = ({
     const panY = useState<Animated.Value>(new Animated.Value(height))[0]
 
     const panResponders = PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => false,
+        onStartShouldSetPanResponder : () => true,
         onPanResponderMove: Animated.event([null, {dy: panY}], {
           useNativeDriver: false,
         }),
+        onPanResponderTerminationRequest: ()=>true,
         onPanResponderRelease: (_, gs) => {
-          if ((gs.dy > 0 && gs.vy > 2) || gs.dy > height/4) {
+          const closeArea = size === 'large' ? (height/2)-50 : (height-(height/4))-50 ;
+          const clickOutside = (gs.dy < 1 && gs.dx < 1 && gs.moveY <closeArea);
+          const swipeFast = (gs.dy > 0 && gs.vy > 2);
+          const swipeDistance = gs.dy > height/4
+          if (swipeFast || swipeDistance  || clickOutside) {
             return closeHandler();
           }
           return resetAnimation.start();
@@ -43,8 +47,8 @@ const BottomDrawer : React.FC<props> = ({
         useNativeDriver : true
     })
     const topInterpolate = panY.interpolate({
-        inputRange: [0,1],
-        outputRange: [0,1]
+        inputRange: [-1,0,1],
+        outputRange: [0,0,1]
     });
 
     const closeHandler = ()=> closeAnimation.start(closeFuntion)
@@ -64,17 +68,17 @@ const BottomDrawer : React.FC<props> = ({
         transparent
         onRequestClose={closeHandler}
     >
-        <TouchableOpacity activeOpacity={1} style={globalStyles.overlayContainer} onPress={closeHandler}>
+        <View style={globalStyles.overlayContainer} 
+            {...panResponders.panHandlers}>
           <Animated.View 
               style={[styles.container ,{
                 transform : [{translateY : topInterpolate}],
                 minHeight : size === 'large' ? height/2 : height/4
               }]}
-              {...panResponders.panHandlers}
           >
             {children}
           </Animated.View>
-        </TouchableOpacity>
+        </View>
     </Modal>
   )
 }

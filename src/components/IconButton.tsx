@@ -1,6 +1,5 @@
-import {Text, View } from 'react-native'
+import {Pressable, TouchableOpacity} from 'react-native'
 import React from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 type btnProps = {
@@ -18,7 +17,7 @@ const IconButton : React.FC<btnProps>= ({btnSize,iconName,pressFunction,children
             color : 'white',
             padding : 5,
             textAlign : 'center',
-            textAlignVertical : 'center'
+            textAlignVertical : 'center',
         }}
       />
       {children}

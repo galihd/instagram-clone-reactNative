@@ -8,16 +8,8 @@ import SignInScreen from '../screens/auth/SignInScreen'
 import RegisterScreen from '../screens/auth/RegisterScreen'
 import * as SplashScreen from 'expo-splash-screen';
 import { useUserContext } from '../contexts/UserContexts'
-import { loadUserDataFromStorage, signIn } from '../contexts/UserContexts/UserContextAction'
-import AddPostStack from './AddPostStack'
+import { loadActiveUserDataFromStorage, setRelation, signIn } from '../contexts/UserContexts/UserContextAction'
 import {globalStyles} from '../../AppStyle'
-
-var createPostStackOptions : StackNavigationOptions = 
-    {
-      headerShown:false,
-      ...TransitionPresets.SlideFromRightIOS,
-      gestureDirection:'horizontal-inverted'
-    }
 
 const RootStackNavigation : React.FC = () => {
     const rootStack = createStackNavigator<rootStackParamList>();
@@ -30,9 +22,15 @@ const RootStackNavigation : React.FC = () => {
           // Keep the splash screen visible while we fetch resources
           await SplashScreen.preventAutoHideAsync();
           // Pre-load fonts, make any API calls you need to do here
-          loadUserDataFromStorage()
-          .then(userData => dispatch(signIn(userData)))
+          const activeUser = await loadActiveUserDataFromStorage()
+          await signIn(activeUser)
+          .then(dispatch)
+          .then(()=>setRelation(activeUser.appUserId))
+          .then(dispatch)
           .catch(err => console.log(err))
+
+
+          
           
         } catch (e) {
           console.warn(e);
@@ -72,7 +70,6 @@ const RootStackNavigation : React.FC = () => {
       />
       <rootStack.Navigator initialRouteName={state.isAuthenticated ? 'main' : 'signIn'}>
           <rootStack.Screen name='main' component={MainNavigation} options={{headerShown:false}}/>
-          <rootStack.Screen name='createPost' component={AddPostStack}  options={createPostStackOptions}/>
           <rootStack.Screen name='signIn' component={SignInScreen} options={{headerShown:false}}/>
           <rootStack.Screen name='signUp' component={RegisterScreen} options={{headerShown:false}}/>
       </rootStack.Navigator>

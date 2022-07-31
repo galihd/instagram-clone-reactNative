@@ -44,7 +44,7 @@ export type Like = {
     appUser : AppUser
 }
 
-export type FollowType = {
+export type Follow = {
     followId: string
     fromUserId : string
     toUserId : string
@@ -57,5 +57,9 @@ export type PostType = {
     likes : number
     caption : string
     comments : Array<Comment>
+}
 
+export type FollowRelation = {
+    following : Follow[]
+    followers : Follow[]
 }

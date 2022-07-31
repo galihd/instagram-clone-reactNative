@@ -7,7 +7,6 @@ export type rootStackParamList = {
     signIn : undefined
     signUp : undefined
     main : undefined
-    createPost : undefined
 }
 
 
@@ -28,7 +27,10 @@ export type mainTabParamList = {
 }
 
 export type mainStackParamList = {
-    home : undefined
+    home : {
+        isPosting? : boolean
+    }
+    createPost : undefined
     profile : {
         appUserId : string
         fromHomeTab : boolean
@@ -46,6 +48,7 @@ export type mainStackParamList = {
         newAvatar? : MediaLibrary.Asset
     }
     ProfileGallery : undefined
+
 }
 
 export type profileTobTabParamList = {

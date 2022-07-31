@@ -1,7 +1,7 @@
-import { collection, deleteDoc, doc, FirestoreDataConverter, getDoc, getDocs, increment, query, Query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, FirestoreDataConverter, getDoc, getDocs, increment, query, Query, setDoc, updateDoc, where, writeBatch, WriteBatch } from "firebase/firestore";
 import { Comment, Like, Post } from "../../types/modeltypes";
 import { db } from "../firebaseConfig";
-import { downloadImage, downloadImages, uploadPost } from "../fireStorage";
+import { deletePostDirectory, downloadImage, downloadImages, uploadPost } from "../fireStorage";
 import { findAppUserById } from "./usersRepo";
 
 const PostConverter : FirestoreDataConverter<Post> = {
@@ -55,6 +55,21 @@ export const createPost = async (postData : Post) : Promise<Post> => {
     return findPostById(docRef.id);
 }
 
+export const deletePost = async (postData : Post) => {
+    deleteDoc(  doc(postsCollections,postData.postId) )
+    deleteAllLikesByPostId(postData.postId)
+    deleteAllCommentsByPostId(postData.postId)
+    deletePostDirectory(postData);
+}
+
+export const deletePostById =async (postId:string) => {
+    const targetPost = await findPostById(postId);
+    deleteDoc( doc(postsCollections,postId) );
+    deleteAllCommentsByPostId(postId)
+    deleteAllLikesByPostId(postId)
+    deletePostDirectory(targetPost)
+}
+
 export const findPostById = async (postId : string) : Promise<Post> => {
     return  getDoc(doc(postsCollections,postId)).
             then(post => convertPostToDownloadble(post.data()!));
@@ -106,6 +121,34 @@ export const findAllCommentsByPostId =async (postId:string) : Promise<Comment[]>
     
 }
 
+export const deleteCommentById = (commentId : string ) => deleteDoc( doc(commentsCollections,commentId) );
+
+export const deleteAllCommentsByPostId = async (postId : string) => {
+    const batch = writeBatch(db);
+    const qSnap = await getDocs( query(commentsCollections,where('postId','==',postId),where('targetType','==','post')) );
+    qSnap.docs
+        .map(snap => snap.ref)
+        .forEach(docref => {
+            deleteAllLikesByCommentId(docref.id)
+            deleteAllCommentRepliesByCommentId(docref.id)
+            batch.delete(docref)
+        })
+
+    return batch.commit()
+}
+
+export const deleteAllCommentRepliesByCommentId = async (commentId : string) => {
+    const batch = writeBatch(db);
+
+    const qSnap = await getDocs( query(commentsCollections,where('postId','==',commentId),where('targetType','==','comment')) );
+    if(qSnap.size > 0)
+        qSnap.docs
+        .map(snap => snap.ref)
+        .forEach(ref => batch.delete(ref))
+    
+    return batch.commit();   
+}
+
 
 
 // LIKES SECTION==========================================================
@@ -126,7 +169,16 @@ export const createLike = async (like: Like) =>{
 }
 
 export const findAllPostLikeByPostId = async(targetId : string) : Promise<Like[]> =>{
-    const qSnap = await getDocs( query(likesCollections,where('targetId','==',targetId)) );
+    const qSnap = await getDocs( query(likesCollections,where('targetId','==',targetId),where('targetType','==','post')) );
+    
+    return Promise.all( 
+        qSnap.docs
+        .map(like=>like.data())
+        .map(convertLikeToDownloadble) )
+}
+
+export const findAllCommentLikesByCommentId = async (targetId:string) => {
+    const qSnap = await getDocs( query(likesCollections,where('targetId','==',targetId),where('targetType','==','comment')) );
     
     return Promise.all( 
         qSnap.docs
@@ -137,4 +189,24 @@ export const findAllPostLikeByPostId = async(targetId : string) : Promise<Like[]
 export const deleteLike = async (like : Like) => {
     await updateDoc(doc(postsCollections, like.targetId), { likesCount: increment(-1) });
     return await deleteDoc(doc(likesCollections, like.likeId));
+}
+
+export const deleteAllLikesByPostId = async ( postId : string ) => {
+    const batch = writeBatch(db);
+    const qSnap = await getDocs( query(likesCollections,where('targetId','==',postId),where('targetType','==','post')) );
+    qSnap.docs
+        .map(snap => snap.ref)
+        .forEach(ref => batch.delete(ref))
+
+    return batch.commit()
+}
+
+export const deleteAllLikesByCommentId = async ( commmentId : string ) => {
+    const batch = writeBatch(db);
+    const qSnap = await getDocs( query(likesCollections,where('targetId','==',commmentId),where('targetType','==','comment')) );
+        qSnap.docs
+        .map(snap => snap.ref)
+        .forEach(ref => batch.delete(ref))
+
+    return batch.commit()
 }

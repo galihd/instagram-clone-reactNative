@@ -31,13 +31,13 @@ const EditProfileScreen = () => {
     const submitProfileEdit = async (values : AppUser,helpers : FormikHelpers<AppUser>) => {
         // LOADING
         if(newAvatar){
-            await updateUser({...values,
-                avatarUrl : newAvatar.uri},true)
-            .then(dispatch)
+            await updateUser(values,newAvatar.uri).then(dispatch)
         }else{
             await updateUser(values).then(dispatch)
         }
         // HIDE LOADING
+
+        navigation.navigate('profile',{appUserId : state.user?.appUserId!,fromHomeTab : true})
     }
 
     useEffect(() => {
@@ -73,7 +73,7 @@ const EditProfileScreen = () => {
                     <View>
                         <View style={{padding:15,alignItems:'center',alignSelf:'center'}}>
                             <Image 
-                                source={{uri : newAvatar? newAvatar.uri :  `data:image/png;base64,${state.user?.avatarUrl}`}} 
+                                source={{uri : newAvatar? newAvatar.uri :  state.user?.avatarUrl}} 
                                 style={styles.avatarImage}/>
                             <Text 
                                 style={globalStyles.linkText}

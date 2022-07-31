@@ -1,4 +1,4 @@
-import { findAllPostByUserGroup } from "../../FireBase/fireStoreFunctions/postsRepo";
+import { deletePost, findAllPostByUserGroup } from "../../FireBase/fireStoreFunctions/postsRepo";
 import { Post } from "../../types/modeltypes";
 import { feedContextAction} from "../ContextTypes";
 import { feedContextActionsType } from "./FeedContextReducer";
@@ -16,5 +16,13 @@ export const updateFeeds = (postData : Post) : feedContextAction => {
         type : feedContextActionsType.updateFeeds,
         payload : postData
     }
+}
+
+export const deletePostRequest = async (postData : Post) : Promise<feedContextAction> =>  {
+    return deletePost(postData).then(() => 
+        ({
+            type : feedContextActionsType.deletePost,
+            payload : postData
+        }));
 }
 

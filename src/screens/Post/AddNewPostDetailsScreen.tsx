@@ -1,16 +1,16 @@
 import { Image, StyleSheet, Switch, Text, TextInput, TouchableHighlight, View } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/AntDesign'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { createPostStackParamList, rootStackParamList } from '../../types/navtypes'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { createPostStackParamList, mainStackParamList} from '../../types/navtypes'
 import * as MediaLibrary from 'expo-media-library'
 import {Formik, FormikHelpers} from 'formik'
 import * as Yup from 'yup'
 import { useUserContext } from '../../contexts/UserContexts'
-import { AppUser, Post } from '../../types/modeltypes'
-import { createPost } from '../../FireBase/fireStoreFunctions/postsRepo'
+import { Post } from '../../types/modeltypes'
 import { globalStyles } from '../../../AppStyle'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { addPost } from '../../contexts/UserContexts/UserContextAction'
 
 
 interface createPostInterface {
@@ -27,13 +27,16 @@ const schema = Yup.object({
 })
 
 const AddNewPostDetailsScreen : React.FC<{
+  navigation : StackNavigationProp<createPostStackParamList,"postDetails">
   handleSubmitRef : React.MutableRefObject<((e?: React.FormEvent<HTMLFormElement> | undefined) => void) | undefined>
-}> = ({handleSubmitRef}) => {
+}> = ({handleSubmitRef,navigation}) => {
   const [faceBookPost, setfaceBookPost] = useState<boolean>(false)
   const [twitterPost, settwitterPost] = useState<boolean>(false)
   const [tumblrPost, settumblrPost] = useState<boolean>(false)
 
-  const navigation = useNavigation<StackNavigationProp<rootStackParamList,"createPost">>();
+  
+  const mainStackNavigation : StackNavigationProp<mainStackParamList> = navigation.getParent()
+    
   const {state} = useUserContext();
   const routeProp = useRoute<RouteProp<createPostStackParamList,"postDetails">>();
   const {selectedFiles} = routeProp.params
@@ -52,10 +55,11 @@ const AddNewPostDetailsScreen : React.FC<{
       postType : (selectedFiles as Array<MediaLibrary.Asset>)[0].mediaType === MediaLibrary.MediaType.photo ? 'post' : 'reels'
     }
 
-    // TO DO : LOADING INDICATOR
-    createPost(postData).then( post => {
-      // TO DO : CLOSE LOADING INDICATOR
-      navigation.navigate('main');
+    navigation.popToTop()
+    navigation.goBack()
+    mainStackNavigation.navigate('home',{isPosting : true})
+    addPost(postData).then( post => {
+      mainStackNavigation.navigate('home',{isPosting : false})
     })
     helpers.setSubmitting(false);
   }
