@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet} from 'react-native'
 
-const {height,width} = Dimensions.get('window')
+const {height,width} = Dimensions.get('screen')
 
 export const globalStyles = StyleSheet.create({
     splashImage : {
@@ -16,6 +16,7 @@ export const globalStyles = StyleSheet.create({
     darkContainer : {
         flex :1,
         backgroundColor : 'black',
+        width: width
     },
     overlayContainer : {
         flex :1,
@@ -68,6 +69,13 @@ export const globalStyles = StyleSheet.create({
         flexDirection:'row',
         justifyContent :'space-around',
         alignItems : 'center'
+    },
+    headerBtn : {
+        fontSize : 30,
+        color : 'white',
+        padding : 5,
+        textAlign : 'center',
+        textAlignVertical : 'center'
     }
 })
 
