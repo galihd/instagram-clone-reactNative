@@ -1,6 +1,5 @@
 import { Image, StyleSheet, Text, TouchableHighlight, View} from 'react-native'
 import React, { useEffect, useRef } from 'react'
-import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import ExploreScreen from '../screens/ExploreScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useUserContext } from '../contexts/UserContexts';
@@ -87,7 +86,7 @@ const HomeStack : React.FC<{
 }
 
 const ProfileStack : React.FC<{
-  navigation : MaterialBottomTabNavigationProp<mainTabParamList,"Home">
+  navigation : BottomTabNavigationProp<mainTabParamList,"Home">
 }> = ({navigation}) => {
   const {state} = useUserContext();
   return(
