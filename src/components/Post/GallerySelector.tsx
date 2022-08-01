@@ -1,4 +1,4 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, View } from 'react-native'
+import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TouchableHighlight, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as MediaLibrary from 'expo-media-library'
 import IconButton from '../IconButton';
@@ -45,38 +45,46 @@ const GallerySelector : React.FC<{
     <>
         <PreviewPane previewFile={previewFile}/>
         
-        {showUtility &&
-        <View style={styles.utilityBar}>
-          <View style={{backgroundColor: allowMultiple ? 'grey' : 'black'}}>
-            <IconButton iconName='card-multiple' btnSize='medium' pressFunction={()=>setAllowMultiple(!allowMultiple)}>
-              <Text style={{color:'white',marginRight:25,fontSize:10}}>SELECT MULTIPLE</Text>
-            </IconButton>
-          </View>
-          <IconButton iconName='camera' btnSize='medium' pressFunction={closeFunction}/>
-        </View>
-        }
 
-        {assets && 
-          <ScrollView style={globalStyles.darkContainer} contentContainerStyle={gridStyle.gridContentContainer}>
-            {assets.map((file,idx) => 
-              <TouchableHighlight key={idx} onPress={()=>touchFileHandler(file)} 
-                style={(selectedFilesState && (selectedFilesState as Array<MediaLibrary.Asset>).includes(file)) && gridStyle.selectedGridTouchable}>
-                {
-                  file.mediaType === 'photo' ?
-                  <Image source={{uri : file.uri}} style={
-                    selectedFilesState && 
-                    ((selectedFilesState as Array<MediaLibrary.Asset>).includes(file)) ? 
-                      gridStyle.selectedGridImage : gridStyle.standardGridImage}/> 
-                    :
-                  <View>
-                    <Image source={{uri : file.uri}} style={gridStyle.standardGridImage}/> 
-                    <Icon name='play-outline' style={gridStyle.GridVideoBadge}/>
-                  </View>
-                }
-              </TouchableHighlight>
-            )}
-          </ScrollView>
+        {
+          assets && 
+          <FlatList 
+            ListHeaderComponent={
+              showUtility ?
+              <View style={styles.utilityBar}>
+                <View style={{backgroundColor: allowMultiple ? 'grey' : 'black'}}>
+                  <IconButton iconName='card-multiple' btnSize='medium' pressFunction={()=>setAllowMultiple(!allowMultiple)}>
+                    <Text style={{color:'white',marginRight:25,fontSize:10}}>SELECT MULTIPLE</Text>
+                  </IconButton>
+                </View>
+                <IconButton iconName='camera' btnSize='medium' pressFunction={closeFunction}/>
+              </View> : undefined
+            }
+            
+            style={[globalStyles.darkContainer]}
+            numColumns={3}
+            data={assets}
+            keyExtractor={(p) => p.id}
+            renderItem={
+              ({item,index})=> 
+              <TouchableHighlight key={index} onPress={()=>touchFileHandler(item)} 
+              style={(selectedFilesState && (selectedFilesState as Array<MediaLibrary.Asset>).includes(item)) && gridStyle.selectedGridTouchable}>
+              {
+                item.mediaType === 'photo' ?
+                <Image source={{uri : item.uri}} style={
+                  selectedFilesState && 
+                  ((selectedFilesState as Array<MediaLibrary.Asset>).includes(item)) ? 
+                    gridStyle.selectedGridImage : gridStyle.standardGridImage}/> 
+                  :
+                <View>
+                  <Image source={{uri : item.uri}} style={gridStyle.standardGridImage}/> 
+                  <Icon name='play-outline' style={gridStyle.GridVideoBadge}/>
+                </View>
+              }
+            </TouchableHighlight>
           }
+          />
+        }
       </>
   )
 }

@@ -80,10 +80,6 @@ export const globalStyles = StyleSheet.create({
 })
 
 export const gridStyle = StyleSheet.create({
-    gridContentContainer : {
-        flexDirection : 'row',
-        flexWrap : 'wrap'
-    },
     standardGridImage :{
         width : width/3,
         height : width/3,

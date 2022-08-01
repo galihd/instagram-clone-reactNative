@@ -1,5 +1,5 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
-import React, { SetStateAction, useEffect, useState } from 'react'
+import { Dimensions, FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import React, { memo, SetStateAction, useEffect, useRef, useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Post, AppUser,Comment, Like } from '../types/modeltypes'
 import { useNavigation } from '@react-navigation/native'
@@ -7,31 +7,37 @@ import { mainStackParamList } from '../types/navtypes'
 import { StackNavigationProp } from '@react-navigation/stack'
 import IconButton from './IconButton'
 import { useUserContext } from '../contexts/UserContexts'
-import { createLike, deleteAllLikesByPostId, deleteLike} from '../FireBase/fireStoreFunctions/postsRepo'
+import { createLike, deleteLike} from '../FireBase/fireStoreFunctions/postsRepo'
 import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view'
 import { globalStyles } from '../../AppStyle'
 import { useFeedContext } from '../contexts/FeedContexts'
-import { deletePostRequest, loadFeeds} from '../contexts/FeedContexts/FeedContextAction'
 import BottomDrawer from './BottomDrawer'
+import { removePost } from '../contexts/UserContexts/UserContextAction'
+import CachedImage from './CachedImage'
 
 const {width} = Dimensions.get('window');
-const Feeds : React.FC<{postsFeeds : Post[]}> = ({postsFeeds}) => {
-
-
-    
-  return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-        {
-            postsFeeds.map((post,index)=>
-                <View key={index}>
-                    <PostHeader postData={post}/>
-                    <PostDetails postData={post}/>
-                </View>
-            )
-        }
-    </ScrollView>
-  )
+const Feeds :React.FC<{postsFeeds : Post[]}> = ({postsFeeds})=>{
+    return (
+        <FlatList 
+            data={postsFeeds}
+            keyExtractor = {({postId}) => postId}
+            renderItem = {_RenderItem}
+        />
+    )
 }
+
+
+
+const _RenderItem : React.FC<{item : Post}> = ({item}) => {
+    return(
+        <>
+            <PostHeader postData={item}/>
+            <PostDetails postData={item}/>
+        </>
+    )
+}
+    
+
 
 const PostHeader : React.FC<{ postData : Post}> = ({postData}) => {
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
@@ -41,11 +47,10 @@ const PostHeader : React.FC<{ postData : Post}> = ({postData}) => {
 
 
 
-    const deletePost = () => {
+    const deletePost = async () => {
         setDrawerOpen(false);
         // TO DO : LOADING
-        deletePostRequest(postData)
-        .then(feedContext.dispatch)
+        await removePost(postData).then(userContext.dispatch)
         // TO DO : CLOSE LOADING
 
     }
@@ -105,7 +110,7 @@ const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<
     if(fileUrls.length === 1)
         return (
         <TouchableHighlight style={{width:'100%',height:450}}>
-            <Image style={styles.postImg} source={{uri : fileUrls[0]}}/>
+            <CachedImage styles={styles.postImg} downloadUrl={fileUrls[0]}/>
         </TouchableHighlight>
         )
     useEffect(() => {
@@ -117,7 +122,6 @@ const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<
     }, [])
     
     return (
-        <>
         <PagerView 
             style={{width:'100%',height:450}} 
             showPageIndicator={true} 
@@ -134,8 +138,6 @@ const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<
                     )
             }
         </PagerView>
-        </>
-
     )
     
 }

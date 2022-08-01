@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Text, TouchableHighlight, View} from 'react-native'
 import React, { useEffect, useRef } from 'react'
-import { createMaterialBottomTabNavigator, MaterialBottomTabNavigationProp, MaterialBottomTabScreenProps } from '@react-navigation/material-bottom-tabs';
+import { MaterialBottomTabNavigationProp } from '@react-navigation/material-bottom-tabs';
 import ExploreScreen from '../screens/ExploreScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useUserContext } from '../contexts/UserContexts';
@@ -19,6 +19,7 @@ import { RouteProp, useNavigation} from '@react-navigation/native';
 import PostsScreen from '../screens/Post/PostsScreen';
 import {EditProfileScreen,EditProfileGalleryScreen} from '../screens/Profile/EditProfileScreen';
 import AddPostStack from './AddPostStack';
+import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 
 
@@ -47,7 +48,7 @@ var createPostStackOptions : StackNavigationOptions =
   }
 
 const HomeStack : React.FC<{
-    navigation : MaterialBottomTabNavigationProp<mainTabParamList,"Home">
+    navigation : BottomTabNavigationProp<mainTabParamList,"Home">
     route : RouteProp<mainTabParamList,"Home">
   }> = ({navigation,route}) => {
     const createPost = async (mainNavigation :StackNavigationProp<mainStackParamList>) => {
@@ -124,16 +125,21 @@ const ProfileStack : React.FC<{
 
 
 const MainNavigation = () => {
-    const Tabs = createMaterialBottomTabNavigator<mainTabParamList>(); 
+    const Tabs = createBottomTabNavigator<mainTabParamList>(); 
     const {state} = useUserContext();
   return (
     <Tabs.Navigator
-      barStyle={{backgroundColor:'black'}}
-      shifting={false}
-      labeled = {false}
-      activeColor='white'
-      inactiveColor='black'
       backBehavior='history'
+      detachInactiveScreens={true}
+      screenOptions={{
+        headerShown : false,
+        tabBarActiveTintColor : 'white',
+        tabBarInactiveTintColor : 'black',
+        tabBarShowLabel : false,
+        tabBarStyle : {
+          backgroundColor : 'black',
+        }
+      }} 
     >
     <Tabs.Screen name='Home' component={HomeStack} options={{
         tabBarIcon : ({color}) => <Icon name={color === 'black' ? 'home-outline' : 'home'} style={color === 'white' ? styles.barIconA : styles.barIcon}/>,
