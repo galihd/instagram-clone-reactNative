@@ -30,7 +30,7 @@ export const userContextReducer = (state : userContextStateType,action : userCon
             ...state
         }
         case userContextActionsType.signIn : return {
-            ...state,
+            ...initialUserContextState,
             user : action.payload! as AppUser,
             isAuthenticated : true
         }
