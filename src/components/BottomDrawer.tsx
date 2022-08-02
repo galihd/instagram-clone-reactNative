@@ -8,13 +8,14 @@ interface props {
     size? : 'large' | 'small'
     isOpen : boolean
     closeFuntion : ()=>void
+    children : React.ReactNode
 }
 
-const BottomDrawer : React.FC<props> = ({
+const BottomDrawer : React.FunctionComponent<props> = ({
     isOpen
-    ,children
     ,closeFuntion
     ,size = 'large'
+    ,children
 }) => {
     const panY = useState<Animated.Value>(new Animated.Value(height))[0]
 

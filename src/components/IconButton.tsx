@@ -6,6 +6,7 @@ type btnProps = {
     btnSize : "small" | "medium" | "large" | number
     iconName : string
     pressFunction? : ()=>void
+    children? : React.ReactNode
 }
 
 const IconButton : React.FC<btnProps>= ({btnSize,iconName,pressFunction,children}) => {
