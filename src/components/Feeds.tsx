@@ -110,7 +110,7 @@ const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<
     if(fileUrls.length === 1)
         return (
         <TouchableHighlight style={{width:'100%',height:450}}>
-            <CachedImage styles={styles.postImg} downloadUrl={fileUrls[0]}/>
+            <CachedImage styles={styles.postImg} downloadUrl={fileUrls[0]} loadingIndicatorShow />
         </TouchableHighlight>
         )
     useEffect(() => {
@@ -132,7 +132,7 @@ const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<
                 fileUrls.map((fileUrl,index) => 
                     <View key={index} collapsable={false}>
                         <TouchableHighlight>
-                            <Image style={styles.postImg} source={{uri : fileUrl}}/>
+                            <CachedImage styles={styles.postImg} downloadUrl={fileUrl}/>
                         </TouchableHighlight>
                     </View>
                     )

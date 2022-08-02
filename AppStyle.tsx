@@ -85,13 +85,18 @@ export const gridStyle = StyleSheet.create({
         height : width/3,
         resizeMode : 'cover'
     },
+    smallGridImage : {
+        width : width/4,
+        height : width/4,
+        resizeMode : 'cover'
+    },
     selectedGridTouchable : {
         padding :5,
         backgroundColor : 'white'
     },
     selectedGridImage : {
-        width : (width/3)-10,
-        height : (width/3)-10,
+        width : (width/4)-10,
+        height : (width/4)-10,
         resizeMode : 'cover',
     },
     GridVideoBadge:{
