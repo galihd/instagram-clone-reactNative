@@ -22,26 +22,37 @@ var stackOptions : (leftbtn? : React.ReactNode,title?: string,rightbtn? : React.
 
 const CreatePostStack = createStackNavigator<createPostStackParamList>();
 
+const totalFiles = MediaLibrary.getAlbumsAsync()
+    .then(album => album.flatMap(al=>al.assetCount))
+    .then(arr => arr.reduce((pre,cur)=> pre+cur),()=>0)
+
+
+const getGallery = totalFiles.then(value => MediaLibrary.getAssetsAsync({
+  first : 50,
+  sortBy : 'modificationTime',
+  mediaType : [MediaLibrary.MediaType.video,MediaLibrary.MediaType.photo],
+}))
+
 const AddPostStack = () => {
     const [assets, setAssets] = useState<Array<MediaLibrary.Asset>>([])
     const [selectedFiles, setselectedFiles] = useState<Array<MediaLibrary.Asset> | Array<CameraCapturedPicture>>();
 
     const handleSubmitRef = useRef<(e?: React.FormEvent<HTMLFormElement> | undefined) => void>();
   
-    const getMedias = async () =>{
-      const pagedAssets = await MediaLibrary.getAssetsAsync({
-        first : 20,
-        mediaType : [MediaLibrary.MediaType.photo,MediaLibrary.MediaType.video]
-      })
-      setAssets(pagedAssets.assets);
-    }
 
-    const createPost = ()=>{
-      handleSubmitRef.current!()
+
+    const createPost = ()=>handleSubmitRef.current!()
+
+    const loadMoreAssets = async()=>{
+      
     }
   
     useEffect(() => {
-      getMedias()
+      
+      getGallery.then(pagedAsset => {
+        setAssets(pagedAsset.assets)
+        
+      })
     
       return () => {
         
@@ -72,7 +83,7 @@ const AddPostStack = () => {
           <IconButton 
             iconName='check' 
             btnSize={'large'}
-            pressFunction={()=>createPost()}
+            pressFunction={createPost}
           />
           )}>
         {props => <AddNewPostDetailsScreen navigation={props.navigation} handleSubmitRef={handleSubmitRef}/>}

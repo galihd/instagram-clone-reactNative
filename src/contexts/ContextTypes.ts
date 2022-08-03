@@ -5,13 +5,12 @@ import { AppUser, Follow, FollowRelation, Post } from "../types/modeltypes"
 export type userContextStateType = {    
     isAuthenticated : boolean
     user : AppUser | undefined
-    userPosts : Post[]
     relation : FollowRelation
 }
 
 export type userContextAction = {
     type : string
-    payload : AppUser | FollowRelation | Follow | Post | Post[] | string | null
+    payload : AppUser | FollowRelation | Follow | string | null
 }
 
 export type userContextType = {
@@ -22,7 +21,9 @@ export type userContextType = {
 //FEED CONTEXT===================================
 
 export type feedContextStateType = {
+    userPosts : Post[]
     FeedItems : Array<Post>
+    isMuted : boolean
 }
 
 export type feedContextAction = {

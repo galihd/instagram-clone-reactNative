@@ -1,43 +1,57 @@
-import { Dimensions, FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
-import React, { memo, SetStateAction, useEffect, useRef, useState } from 'react'
+import { FlatList, Image,StyleSheet, Text, TouchableOpacity, View, ViewabilityConfigCallbackPairs, ViewToken } from 'react-native'
+import React, {  useEffect, useRef, useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { Post, AppUser,Comment, Like } from '../types/modeltypes'
+import { Post, Like } from '../types/modeltypes'
 import { useNavigation } from '@react-navigation/native'
 import { mainStackParamList } from '../types/navtypes'
 import { StackNavigationProp } from '@react-navigation/stack'
 import IconButton from './IconButton'
 import { useUserContext } from '../contexts/UserContexts'
 import { createLike, deleteLike} from '../FireBase/fireStoreFunctions/postsRepo'
-import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view'
 import { globalStyles } from '../../AppStyle'
 import { useFeedContext } from '../contexts/FeedContexts'
 import BottomDrawer from './BottomDrawer'
-import { removePost } from '../contexts/UserContexts/UserContextAction'
-import CachedImage from './CachedImage'
+import { muteFeeds, removePost, unMuteFeeds } from '../contexts/FeedContexts/FeedContextAction'
+import { Video } from 'expo-av'
+import CachedVideo from './CachedVideo'
+import { PostImage, PostPagerIndicator } from './Home/PostImage'
 
-const {width} = Dimensions.get('window');
 const Feeds :React.FC<{postsFeeds : Post[]}> = ({postsFeeds})=>{
+    const [viewedItem, setviewedItem] = useState<Post>()
+
+    const viewableChangeHandler= useRef<ViewabilityConfigCallbackPairs>([
+        {
+            viewabilityConfig:{
+                minimumViewTime: 200,
+                viewAreaCoveragePercentThreshold:40
+            },
+            onViewableItemsChanged : ({changed,viewableItems})=>{
+                const item = (changed[0].item as Post);
+                if(viewedItem?.postId !== item.postId){
+                    setviewedItem(item)
+                }
+            }
+        }
+    ])
+    
     return (
-        <FlatList 
+        <FlatList
             data={postsFeeds}
+            viewabilityConfigCallbackPairs={viewableChangeHandler.current}
             keyExtractor = {({postId}) => postId}
-            renderItem = {_RenderItem}
+            renderItem = {
+                ({item})=>
+                <>
+                <PostHeader postData={item}/>
+                <PostDetails 
+                    postData={item} 
+                    viewedFeeds={viewedItem}/>
+                </>
+            }
+            
         />
     )
 }
-
-
-
-const _RenderItem : React.FC<{item : Post}> = ({item}) => {
-    return(
-        <>
-            <PostHeader postData={item}/>
-            <PostDetails postData={item}/>
-        </>
-    )
-}
-    
-
 
 const PostHeader : React.FC<{ postData : Post}> = ({postData}) => {
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
@@ -45,12 +59,10 @@ const PostHeader : React.FC<{ postData : Post}> = ({postData}) => {
     const userContext = useUserContext();
     const feedContext = useFeedContext();
 
-
-
     const deletePost = async () => {
         setDrawerOpen(false);
         // TO DO : LOADING
-        await removePost(postData).then(userContext.dispatch)
+        await removePost(postData).then(feedContext.dispatch)
         // TO DO : CLOSE LOADING
 
     }
@@ -100,88 +112,38 @@ const PostHeader : React.FC<{ postData : Post}> = ({postData}) => {
     )
 }
 
-const PostImage : React.FC<{postData : Post,setPagerIndexState : React.Dispatch<SetStateAction<number>>}> = ({postData : {
-    fileUrls,
-    taggedPeople,
-    },
-    setPagerIndexState
-}) => {
-    
-    if(fileUrls.length === 1)
-        return (
-        <TouchableHighlight style={{width:'100%',height:450}}>
-            <CachedImage styles={styles.postImg} downloadUrl={fileUrls[0]} loadingIndicatorShow />
-        </TouchableHighlight>
-        )
-    useEffect(() => {
-      
-    
-      return () => {
-        
-      }
-    }, [])
-    
-    return (
-        <PagerView 
-            style={{width:'100%',height:450}} 
-            showPageIndicator={true} 
-            onPageSelected={(selectedEvent : PagerViewOnPageSelectedEvent) => {
-                setPagerIndexState(selectedEvent.nativeEvent.position)
-            }}>
-            {
-                fileUrls.map((fileUrl,index) => 
-                    <View key={index} collapsable={false}>
-                        <TouchableHighlight>
-                            <CachedImage styles={styles.postImg} downloadUrl={fileUrl}/>
-                        </TouchableHighlight>
-                    </View>
-                    )
-            }
-        </PagerView>
-    )
-    
-}
 
-const PostPagerIndicator : React.FC<{
-    pageCount : number
-    activePage : number
-}> = ({pageCount,activePage}) => {
-    
-    return(
-        <View style={{
-            position:'absolute',
-            flexDirection:'row',
-            justifyContent:'center',
-            alignItems:'center',
-            marginLeft: pageCount < 5 ? width/2-(pageCount*10) : width/2-(5*10),
-            padding:10,
-            backgroundColor:'transparent',}}>
-            {
-            [...Array(pageCount)].map(
-                (item,index) => 
-                <View
-                    key={index}
-                    style={{
-                        height:8,
-                        width:8,
-                        borderRadius:50,
-                        marginHorizontal:2,
-                        backgroundColor : (activePage === (index)) ? 'white' : 'grey'
-                        }}>
-                </View>)
-            }
-        </View>
-    )
-}
 
-const PostDetails : React.FC<{postData : Post}> = (
-    {postData }) =>{
+const PostDetails : React.FC<{
+        postData : Post
+        viewedFeeds :Post | undefined
+    }> = ({
+        postData,
+        viewedFeeds,
+     }) =>{
     const [like, setlike] = useState<Like>();
     const [saved, setSaved] = useState<boolean>(false);
     const [pagerIndexState, setPagerIndexState] = useState<number>(0);
 
+    const videoRef = useRef<Video>();
     const navigation = useNavigation<StackNavigationProp<mainStackParamList,"home">>();
     const {state} = useUserContext();
+    const feedContext = useFeedContext();
+    
+    useEffect(()=>{
+        navigation.addListener('blur',()=>{
+            if(videoRef.current)
+                videoRef.current?.stopAsync()
+        })
+    },[])
+    useEffect(()=>{
+        if(viewedFeeds?.postId === postData.postId){
+            videoRef.current?.playAsync();
+        }else{
+            videoRef.current?.stopAsync();
+        }
+    },[viewedFeeds])
+
     const likePost = () => {
         if(!like){
             postData.likesCount++;
@@ -199,8 +161,33 @@ const PostDetails : React.FC<{postData : Post}> = (
     }
     return(
         <View>
-            <PostImage postData={postData} setPagerIndexState={setPagerIndexState}/>
-            
+            {
+                postData.postType === 'post' ?
+                <PostImage 
+                    postData={postData} 
+                    setPagerIndexState={setPagerIndexState}/>
+                :
+                <View>
+                    <CachedVideo 
+                        ref={r => videoRef.current = r!} 
+                        source={postData.fileUrls[0]} 
+                        style={{width :'100%',height:450}}/>
+                    <IconButton 
+                        btnSize={'medium'}
+                        iconName={feedContext.state.isMuted ? 'volume-high' : 'volume-mute'}
+                        styles={{
+                            position:'absolute',
+                            bottom:15,
+                            right:15,
+                        }}
+                        pressFunction={()=>{
+                            feedContext.state.isMuted ? 
+                            feedContext.dispatch(unMuteFeeds())
+                            : feedContext.dispatch(muteFeeds())
+                            }}
+                        />
+                </View>
+            }
             <View style={styles.headerContainer}>
                 <View style={{flexDirection:'row',alignItems:'center'}}>
                     <Icon 
@@ -256,11 +243,6 @@ const styles = StyleSheet.create({
         width : 35,
         height : 35,
         borderRadius : 50
-    },
-    postImg : {
-        width : "100%",
-        height : "100%",
-        resizeMode : 'cover'
     },
     footerIcon : {
         fontSize : 25,

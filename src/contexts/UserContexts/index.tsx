@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useReducer } from 'react'
+import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react'
 import { initialUserContextState, userContextReducer } from './UserContextReducer';
 import { userContextType } from '../ContextTypes'
-import { setPosts, setRelation } from './UserContextAction';
+import { setRelation } from './UserContextAction';
 
 
 
@@ -12,13 +12,12 @@ const userContext = createContext<userContextType>({
 
 export const useUserContext = ()=> useContext(userContext);
 
-const UserContext : React.FC = ({children}) => {
+const UserContext : React.FC<{children? : ReactNode}> = ({children}) => {
   const [state, dispatch] = useReducer(userContextReducer, initialUserContextState)
 
   useEffect(()=>{
     if(state.user && state.isAuthenticated){
       setRelation(state.user.appUserId).then(dispatch)
-      setPosts(state.user.appUserId).then(dispatch)
     }
   },[state.user])
   

@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { mainStackParamList } from '../../types/navtypes'
 import CachedImage from '../CachedImage'
+import { Video } from 'expo-av'
 
 const PostsTab : React.FC<{userPosts : Post[]}> = ({userPosts}) => {
   const navigation = useNavigation<StackNavigationProp<mainStackParamList,"profile">>()
@@ -21,11 +22,14 @@ const PostsTab : React.FC<{userPosts : Post[]}> = ({userPosts}) => {
         ({item})=>
           <TouchableHighlight onPress={()=> navigation.navigate('ProfilePost',{posts : userPosts})}>
             {
+                item.postType==='post' ?
                 <CachedImage downloadUrl={item.fileUrls[0]} styles={gridStyle.standardGridImage}/> 
-                // <View>
-                // <Image source={{uri : post.fileUrls[0]}} style={styles.GridImage}/> 
-                //     <Icon name='play-outline' style={styles.GridVideoBadge}/>
-                // </View>
+                :
+                <>
+                  <Video source={{uri : item.fileUrls[0]}} style={gridStyle.standardGridImage}/>
+                  <Icon name='play-outline' style={gridStyle.GridVideoBadge}/>
+                </>
+
             }
           </TouchableHighlight>
       }

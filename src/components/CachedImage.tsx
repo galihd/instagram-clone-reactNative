@@ -9,18 +9,16 @@ const CachedImage : React.FC<{downloadUrl : string,styles : StyleProp<ImageStyle
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
     useEffect(() => {
-    const hashName = hash.sha1(downloadUrl)
-    const path = `${FileSystem.cacheDirectory}${hashName}`;
-        
         const cacheImage = async () => {
+            const hashName = hash.sha1(downloadUrl)
+            const path = `${FileSystem.cacheDirectory}${hashName}`;
             const cachedFile = await FileSystem.getInfoAsync(path);
-            if(cachedFile.exists){
-                setCachedUri(cachedFile.uri)
-            }else{
+            if(!cachedFile.exists){
                 console.log("downloading image");
-                const newImage = await FileSystem.downloadAsync(downloadUrl,path);
-                setCachedUri(newImage.uri)
+                await FileSystem.downloadAsync(downloadUrl,path);
             }
+
+            setCachedUri(path)
             setIsLoading(false);
         }
 

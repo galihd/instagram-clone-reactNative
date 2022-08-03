@@ -62,7 +62,7 @@ const HomeStack : React.FC<{
   return (
     <mainStack.Navigator>
         <mainStack.Screen name='home' component={HomeScreen}
-          initialParams ={{isPosting : false}}
+          initialParams={{}}
           options={(props) => 
             commonStackOptions(
               null,

@@ -21,17 +21,36 @@ const GallerySelector : React.FC<{
     const [previewFile, setPreviewFile] = useState<MediaLibrary.Asset>();
     const [allowMultiple, setAllowMultiple] = useState<boolean>(false);
 
+    const [videoSelected, setvideoSelected] = useState<boolean>(false)
+
     const touchFileHandler = (file : MediaLibrary.Asset) =>{
       setPreviewFile(file as MediaLibrary.Asset);
-      if(allowMultiple && selectedFilesState){
-        (selectedFilesState as Array<MediaLibrary.Asset>).includes(file) ?
-          selectedFilesState.length>1 && setSelectFileFunction(prev => (prev as MediaLibrary.Asset[]).filter(selected => selected != file))
-        :
-          setSelectFileFunction(prev => [...prev as Array<MediaLibrary.Asset>,file])
-      }else{
-        setSelectFileFunction([file]);
+      if(file){
+        //prevent upload multiple video due to bandwidth
+        if(file.mediaType === MediaLibrary.MediaType.video)
+          setvideoSelected(true)
+
+        if(allowMultiple && selectedFilesState && file.mediaType === MediaLibrary.MediaType.photo){
+          (selectedFilesState as Array<MediaLibrary.Asset>).includes(file) ?
+            selectedFilesState.length>1 && setSelectFileFunction(prev => (prev as MediaLibrary.Asset[]).filter(selected => selected != file))
+          :
+            setSelectFileFunction(prev => [...prev as Array<MediaLibrary.Asset>,file])
+        }else{
+          setSelectFileFunction([file]);
+          if(file.mediaType === MediaLibrary.MediaType.photo)
+            setvideoSelected(false);
+        }
       }
     }
+
+    
+    useEffect(() => {
+      if(videoSelected)
+        setAllowMultiple(false)
+    
+      
+    }, [allowMultiple,videoSelected])
+    
     
     
     useEffect(() => {
@@ -47,7 +66,6 @@ const GallerySelector : React.FC<{
     
     for (index = 0; index < arrayLength; index += chunk_size) {
         let myChunk = myArray.slice(index, index+chunk_size);
-        // Do something if you want with the group
         tempArray.push(myChunk);
     }
 
@@ -81,7 +99,7 @@ const GallerySelector : React.FC<{
              {item.map(itemData => <_renderItem key={itemData.id}
               Item={itemData} 
               pressHandler={()=>touchFileHandler(itemData)} 
-              isSelected={(selectedFilesState as Array<MediaLibrary.Asset>).includes(itemData)}/>)}
+              isSelected={selectedFilesState ? (selectedFilesState as Array<MediaLibrary.Asset>).includes(itemData) : false}/>)}
           </View>
       }
       />
@@ -105,7 +123,7 @@ class _renderItem extends React.PureComponent<{
               isSelected ? gridStyle.selectedGridImage : gridStyle.smallGridImage}/> 
               :
             <View>
-              <Image source={{uri : Item.uri}} style={gridStyle.smallGridImage}/> 
+              <Image source={{uri : Item.uri}} style={isSelected ? gridStyle.selectedGridImage : gridStyle.smallGridImage}/> 
               <Icon name='play-outline' style={gridStyle.GridVideoBadge}/>
             </View>
             

@@ -10,7 +10,8 @@ import { useUserContext } from '../../contexts/UserContexts'
 import { Post } from '../../types/modeltypes'
 import { globalStyles } from '../../../AppStyle'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { addPost } from '../../contexts/UserContexts/UserContextAction'
+import { addPost } from '../../contexts/FeedContexts/FeedContextAction'
+import { useFeedContext } from '../../contexts/FeedContexts'
 
 
 interface createPostInterface {
@@ -38,6 +39,7 @@ const AddNewPostDetailsScreen : React.FC<{
   const mainStackNavigation : StackNavigationProp<mainStackParamList> = navigation.getParent()
     
   const {state} = useUserContext();
+  const feedContext = useFeedContext();
   const routeProp = useRoute<RouteProp<createPostStackParamList,"postDetails">>();
   const {selectedFiles} = routeProp.params
   const {uri,...rest} =  (selectedFiles as Array<MediaLibrary.Asset>)[0]; 
@@ -57,9 +59,10 @@ const AddNewPostDetailsScreen : React.FC<{
 
     navigation.popToTop()
     navigation.goBack()
-    mainStackNavigation.navigate('home',{isPosting : true})
+    mainStackNavigation.navigate('home',{postingFile : postData.fileUrls[0]})
     addPost(postData).then( post => {
-      mainStackNavigation.navigate('home',{isPosting : false})
+      mainStackNavigation.navigate('home',{})
+      feedContext.dispatch(post);
     })
     helpers.setSubmitting(false);
   }

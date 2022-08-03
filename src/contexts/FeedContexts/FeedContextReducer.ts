@@ -4,16 +4,21 @@ import { feedContextAction, feedContextStateType } from "../ContextTypes";
 
 
 export const initialFeedContextState : feedContextStateType = {
-    FeedItems : []
+    FeedItems : [],
+    userPosts : [],
+    isMuted : false
 }
 
 export const feedContextActionsType = {
-    createPost : 'CREATE_POST',
-    readPost : 'READ_POST',
+    setUserPost : 'SET_USER_POST',
     updatePost : 'UPDATE_POST',
     deletePost : 'DELETE_POST',
     loadFeeds : 'LOAD_FEEDS',
-    updateFeeds : 'UPDATE_FEEDS'
+    addFeed : 'ADD_FEED',
+    updateFeeds : 'UPDATE_FEEDS',
+    readPost : 'READ_POST',
+    muteFeeds : 'MUTE_FEEDS',
+    unMuteFeeds : 'UNMUTE_FEEDS',
 }
 
 export const feedContextReducer = (state : feedContextStateType,action : feedContextAction) : feedContextStateType => {
@@ -24,9 +29,19 @@ export const feedContextReducer = (state : feedContextStateType,action : feedCon
             FeedItems : action.payload as Post[]
         }
 
+        case feedContextActionsType.setUserPost : return{
+            ...state,
+            userPosts : action.payload as Post[]
+        }
+
+        case feedContextActionsType.addFeed : return {
+            ...state,
+            userPosts : [action.payload as Post,...state.userPosts],
+            FeedItems : [action.payload as Post,...state.FeedItems]
+        }
+
         case feedContextActionsType.updateFeeds : {
             const postdata = action.payload as Post;
-            
             return{
                 ...state,
                 FeedItems : state.FeedItems.map(feedItem => {
@@ -35,18 +50,26 @@ export const feedContextReducer = (state : feedContextStateType,action : feedCon
                     return feedItem
                 })
             }
+        }       
+
+        case feedContextActionsType.deletePost : return{
+            ...state,
+            userPosts : state.userPosts.filter(posts => posts.postId != (action.payload as Post).postId),
+            FeedItems : state.FeedItems.filter(posts => posts.postId != (action.payload as Post).postId)
         }
 
-        case feedContextActionsType.deletePost : {
-            const postdata = action.payload as Post;
-            return{
-                ...state,
-                FeedItems : state.FeedItems.filter(post => post != postdata)
-            }
+        case feedContextActionsType.muteFeeds: return{
+            ...state,
+            isMuted : true
         }
-
+        case feedContextActionsType.unMuteFeeds: return{
+            ...state,
+            isMuted : false
+        }
 
         default:
             return initialFeedContextState;
     }
 }
+
+

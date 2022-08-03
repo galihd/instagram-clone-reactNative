@@ -15,8 +15,10 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import PostsTab from '../../components/Profile/PostsTab'
 import { globalStyles } from '../../../AppStyle'
-import { followAccount, setRelation, unFollowAccount } from '../../contexts/UserContexts/UserContextAction'
+import { followAccount, unFollowAccount } from '../../contexts/UserContexts/UserContextAction'
 import { getUserFollowersByUserId, getUserFollowingByUserId } from '../../FireBase/fireStoreFunctions/followsRepo'
+import { useFeedContext } from '../../contexts/FeedContexts'
+import ReelsTab from '../../components/Profile/ReelsTab'
 
 const {width,height} = Dimensions.get('screen')
 
@@ -30,14 +32,6 @@ const UserTagTab = () => {
   )
 }
 
-const UserReelsTab = () => {
-  return(
-    <View>
-      <Text>REELS TAB</Text>
-    </View>
-  )
-}
-
 const ProfileScreen = () => {
   const [userData, setuserData] = useState<AppUser>();
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -45,6 +39,7 @@ const ProfileScreen = () => {
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
 
   const {state,dispatch} = useUserContext();
+  const feedContext = useFeedContext();
 
   const navigation = useNavigation<StackNavigationProp<mainStackParamList,"profile">>()
   const {appUserId,fromHomeTab} = useRoute<RouteProp<mainStackParamList,"profile">>().params
@@ -112,8 +107,8 @@ const ProfileScreen = () => {
   },[followRelation])
   useEffect(()=>{
     if(isMyProfile)
-      setUserPosts(state.userPosts)
-  },[state.userPosts])
+      setUserPosts(feedContext.state.userPosts)
+  },[feedContext.state.userPosts])
   
   return (
     <SafeAreaView style={globalStyles.darkContainer}>
@@ -220,11 +215,15 @@ const ProfileScreen = () => {
             tabBarIcon : ({color}) =><Icon name='grid' style={{fontSize:25,color : color}}/>
           }}>
             {props => <PostsTab userPosts={userPosts}/>}
-          </profileTopBar.Screen>
-        <profileTopBar.Screen name='userReels' component={UserReelsTab}
+        </profileTopBar.Screen>
+
+        <profileTopBar.Screen name='userReels'
           options={{
             tabBarIcon : ({color}) =><Icon name='movie-open-play-outline' style={{fontSize:25,color : color}}/>
-          }}/>
+          }}>
+            {props => <ReelsTab userPosts={userPosts.filter(post => post.postType === 'reels')}/>}
+        </profileTopBar.Screen>
+        
         <profileTopBar.Screen name='userTagged' component={UserTagTab}
           options={{
             tabBarIcon : ({color}) =><Icon name='camera-account' style={{fontSize:25,color : color}}/>

@@ -12,7 +12,7 @@ const userAvatarRef = (userData : AppUser) => ref(storageRef,`${userData.appUser
 
 export const uploadPost = (postData : Post) : Promise<string[]> => {
     const fileUrls = postData.fileUrls.map(async (url,index) => {
-        const uploadRef = ref(userPostRef(postData),`${index}.jpg`)
+        const uploadRef = postData.postType === 'post' ? ref(userPostRef(postData),`${index}.jpg`) : ref(userPostRef(postData),`${index}.mp4`)
         const file : File = await (await fetch(url)).blob();
         const result = await uploadBytes(uploadRef,file);
         return result.ref.fullPath

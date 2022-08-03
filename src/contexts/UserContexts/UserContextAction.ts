@@ -1,11 +1,11 @@
 import { userContextActionsType } from "./UserContextReducer";
 import { userContextAction } from "../ContextTypes";
-import { AppUser, Follow, FollowRelation, Post } from "../../types/modeltypes";
+import { AppUser, Follow } from "../../types/modeltypes";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateAvatar } from "../../FireBase/fireStorage";
 import { saveUser } from "../../FireBase/fireStoreFunctions/usersRepo";
 import { createFollow, deleteFollow, getUserFollowersByUserId, getUserFollowingByUserId } from "../../FireBase/fireStoreFunctions/followsRepo";
-import { createPost, deletePost, findPostsByUserId } from "../../FireBase/fireStoreFunctions/postsRepo";
+
 
 
 
@@ -93,30 +93,6 @@ export const updateUser = async (newUserData : AppUser,newAvatar? : string) : Pr
             type : userContextActionsType.update,
             payload : value
          }))
-}
-
-export const setPosts = async (appUserId : string) : Promise<userContextAction> => {
-   return await findPostsByUserId(appUserId)
-   .then(result => ({
-      type : userContextActionsType.setPosts,
-      payload : result
-   }));
-}
-
-export const addPost = async (Post : Post) : Promise<userContextAction> => {
-   const createdPost = await createPost(Post);
-   return ({
-      type: userContextActionsType.addPost,
-      payload: createdPost
-   });
-}
-
-export const removePost = async (post: Post) : Promise<userContextAction> => {
-   await deletePost(post)
-   return{
-      type : userContextActionsType.deletePost,
-      payload : post
-   }
 }
 
 export const setRelation = async (appUserId : string ) : Promise<userContextAction> => ({

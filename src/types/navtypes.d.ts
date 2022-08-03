@@ -28,7 +28,7 @@ export type mainTabParamList = {
 
 export type mainStackParamList = {
     home : {
-        isPosting? : boolean
+        postingFile? : string
     }
     createPost : undefined
     profile : {

@@ -7,8 +7,7 @@ export const initialUserContextState : userContextStateType = {
     relation : {
         followers : [],
         following : []
-    },
-    userPosts : []
+    }
 }
 
 export const userContextActionsType = {
@@ -56,30 +55,13 @@ export const userContextReducer = (state : userContextStateType,action : userCon
                 following : state.relation.following.filter(follow => follow.followId !== (action.payload as Follow).followId)
             }
         }
-
-        case userContextActionsType.setPosts : return{
-            ...state,
-            userPosts : action.payload as Post[]
-        }
-
-        case userContextActionsType.addPost : return {
-            ...state,
-            userPosts : [...state.userPosts,action.payload as Post]
-        }
-
-        case userContextActionsType.deletePost : return{
-            ...state,
-            userPosts : state.userPosts.filter(posts => posts.postId != (action.payload as Post).postId)
-        }
-
         case userContextActionsType.signOut : return action.payload ? ({
             user : action.payload as AppUser,
             isAuthenticated : true,
             relation : {
                 followers : [],
                 following : [],
-            },
-            userPosts : []
+            }
         }) : initialUserContextState
 
         default : return initialUserContextState
